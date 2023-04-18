@@ -18,6 +18,7 @@ The motivation to do this was because I was bored. And because I wanted the mode
 - [ ] Make the package fully typed
 - [ ] Export all typings to the entry file
 - [ ] Add tests
+- [ ] Add a feature similar to a production/development environment for stuff like throwing errors & warnings
 - [ ] Add dev-tools extension (UI & Middleware)
 - [ ] Add optimizations
 - [ ] Add react-redux package

@@ -71,7 +71,7 @@ local function createAction<Args...>(type: string, prepareAction: PreparedAction
 		type = type,
 		[ACTION] = true,
 	}, {
-		__call = function(...: any)
+		__call = function(_self: any, ...: Args...)
 			local args = { ... }
 
 			if prepareAction then

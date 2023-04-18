@@ -49,7 +49,7 @@ local function createReducer<S>(
 			return table.freeze(initialState())
 		end
 	else
-		local frozenInitialState = table.freeze(initialState)
+		local frozenInitialState = if not table.isfrozen(initialState) then table.freeze(initialState) else initialState
 		getInitialState = function()
 			return frozenInitialState
 		end
@@ -107,13 +107,13 @@ local function createReducer<S>(
 		end, state)
 	end
 
-	return setmetatable({}, {
-		__call = function(_self, ...)
-			return reducer(...)
-		end,
-
+	return setmetatable({
 		getInitialState = function(_self)
 			return getInitialState()
+		end,
+	}, {
+		__call = function(_self, ...)
+			return reducer(...)
 		end,
 	})
 end

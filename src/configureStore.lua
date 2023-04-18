@@ -42,8 +42,8 @@ local function configureStore<S, A, M, E>(options: ConfigureStoreOptions<S, A, M
 	local curriedGetDefaultMiddleware = curryGetDefaultMiddleware()
 
 	local reducer = options.reducer
-	local middleware = options.middleware or curriedGetDefaultMiddleware()
-	local devTools = options.devTools or true
+	local middleware = options.middleware or curriedGetDefaultMiddleware():get()
+	local devTools = options.devTools or false
 	local preloadedState = options.preloadedState
 	local enhancers = options.enhancers
 
@@ -58,6 +58,8 @@ local function configureStore<S, A, M, E>(options: ConfigureStoreOptions<S, A, M
 			'"reducer" is a required argument, and must be a function or an object of functions that can be passed to combineReducers'
 		)
 	end
+
+	print(middleware)
 
 	local finalMiddleware = middleware
 	if typeof(finalMiddleware) == "function" then
@@ -85,7 +87,7 @@ local function configureStore<S, A, M, E>(options: ConfigureStoreOptions<S, A, M
 		}, typeof(devTools) == "table" and devTools))
 	end
 
-	local defaultEnhancers = EnhancerArray.new(middlewareEnhancer)
+	local defaultEnhancers = EnhancerArray.new(middlewareEnhancer)._enhancers
 	local storeEnhancers: Enhancers = defaultEnhancers
 
 	if isArray(enhancers) then

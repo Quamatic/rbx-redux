@@ -7,6 +7,10 @@ function MiddlewareArray.new(...)
 	}, MiddlewareArray)
 end
 
+function MiddlewareArray:get()
+	return self._middlewares
+end
+
 function MiddlewareArray:push(middleware)
 	table.insert(self._middlewares, middleware)
 end

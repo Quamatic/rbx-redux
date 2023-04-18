@@ -2,7 +2,7 @@ local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- TODO: Either check if the user has the Promise package or add it as a dependency.
-local Promise = require(ReplicatedStorage.Packages.Promise)
+local Promise = {}
 
 local createAction = require(script.Parent.createAction)
 local merge = require(script.Parent.merge)
@@ -271,6 +271,7 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 					return finalAction
 				end)
 
+			-- Redux assigns fields to the promise with Object.assign here
 			return {
 				promise = promise,
 				requestId = requestId,

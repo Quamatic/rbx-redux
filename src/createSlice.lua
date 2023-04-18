@@ -1,4 +1,4 @@
-local createAction = require(script.Parent.createAction)
+local createAction = require(script.Parent.createAction).createAction
 local createReducer = require(script.Parent.createReducer)
 local merge = require(script.Parent.merge)
 
@@ -28,16 +28,6 @@ local function getType(slice: string, actionKey: string)
 	return `{slice}/{actionKey}`
 end
 
-local function keys(object)
-	local keys_ = {}
-
-	for key in object do
-		table.insert(keys_, key)
-	end
-
-	return keys_
-end
-
 --[[
     Creates a new `Redux` slice.
 
@@ -46,25 +36,28 @@ end
 ]]
 --
 local function createSlice<S>(options: SliceParameters<S>): SliceObject<S>
+	local name = options.name
+	if name == nil then
+		error("`name` is a required option for createSlice")
+	end
+
 	local initialState = if typeof(options.initialState) == "table"
 		then table.freeze(options.initialState)
 		else options.initialState
 
 	local reducers = options.reducers or {}
-	local reducerNames = keys(reducers)
 
 	local sliceCaseReducersByName = {}
 	local sliceCaseReducersByType = {}
 	local actionCreators = {}
 
-	for _, reducerName in reducerNames do
-		local maybeReducerWithPrepare = reducers[reducerName]
+	for reducerName, maybeReducerWithPrepare in reducers do
 		local type = getType(options.name, reducerName)
 
 		local caseReducer
 		local prepareCallback
 
-		if maybeReducerWithPrepare.reducer ~= nil then
+		if typeof(maybeReducerWithPrepare) == "table" and maybeReducerWithPrepare.reducer ~= nil then
 			caseReducer = maybeReducerWithPrepare.reducer
 			prepareCallback = maybeReducerWithPrepare.prepare
 		else
@@ -103,6 +96,8 @@ local function createSlice<S>(options: SliceParameters<S>): SliceObject<S>
 
 	return {
 		name = options.name,
+		actions = actionCreators,
+		caseReducers = sliceCaseReducersByName,
 
 		reducer = function(state, action)
 			if not reducer then

@@ -7,9 +7,11 @@ local function nanoid(size: number)
 	local id = ""
 	local i = size
 
-	while i > 0 do
+	while i ~= 0 do
 		i -= 1
-		id ..= urlAlphabet[bit32.bor(math.random() * 64, 0)]
+
+		local indice = bit32.bor((math.random() * 64), 0)
+		id ..= string.sub(urlAlphabet, indice, indice)
 	end
 
 	return id

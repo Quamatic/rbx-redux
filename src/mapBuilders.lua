@@ -1,12 +1,12 @@
-local createReducer = require(script.Parent.createReducer)
+local reducers = require(script.Parent.types.reducers)
 
 export type ActionReducerMapBuilder<S> = {
 	addCase: (
 		actionCreator: TypedActionCreator<string>,
-		reducer: createReducer.CaseReducer<S, any>
+		reducer: reducers.CaseReducer<S, any>
 	) -> ActionReducerMapBuilder<S>,
-	addMatcher: <A>(matcher: (action: any) -> boolean, reducer: createReducer.CaseReducer<S, A>) -> nil,
-	addDefaultCase: (reducer: createReducer.CaseReducer<S, any>) -> nil,
+	addMatcher: <A>(matcher: (action: any) -> boolean, reducer: reducers.CaseReducer<S, A>) -> nil,
+	addDefaultCase: (reducer: reducers.CaseReducer<S, any>) -> nil,
 }
 
 export type TypedActionCreator<T, A...> = ((A...) -> any) & {
