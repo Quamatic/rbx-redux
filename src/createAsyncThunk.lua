@@ -6,6 +6,7 @@ local Promise = require(ReplicatedStorage.Packages.Promise)
 local createAction = require(script.Parent.createAction)
 local merge = require(script.Parent.merge)
 
+-- TODO: is this even necessary?
 type Promise<T> = {
 	andThen: (self: Promise<T>) -> T,
 }
