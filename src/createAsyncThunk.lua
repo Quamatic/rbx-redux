@@ -1,6 +1,7 @@
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+-- TODO: Either check if the user has the Promise package or add it as a dependency.
 local Promise = require(ReplicatedStorage.Packages.Promise)
 
 local createAction = require(script.Parent.createAction)
