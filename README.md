@@ -20,3 +20,4 @@ The motivation to do this was because I was bored. And because I wanted the mode
 - [ ] Add tests
 - [ ] Add dev-tools extension (UI & Middleware)
 - [ ] Add optimizations
+- [ ] Add react-redux package
