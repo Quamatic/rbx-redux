@@ -4,7 +4,7 @@ local createAction = require(script.createAction)
 local createSlice = require(script.createSlice)
 local compose = require(script.compose)
 local applyMiddleware = require(script.applyMiddleware)
-local bindActionCreator = require(script.bindActionCreator)
+local bindActionCreators = require(script.bindActionCreators)
 local createStore = require(script.createStore)
 local createSelector = require(script.createSelector)
 local createReducer = require(script.createReducer)
@@ -26,7 +26,7 @@ return {
 	unwrapResult = createAsyncThunk.unwrapResult,
 	compose = compose,
 	applyMiddleware = applyMiddleware,
-	bindActionCreator = bindActionCreator,
+	bindActionCreators = bindActionCreators,
 	thunkMiddleware = thunk.thunk,
 	getDefaultMiddleware = getDefaultMiddleware.getDefaultMiddleware,
 	nanoid = nanoid,

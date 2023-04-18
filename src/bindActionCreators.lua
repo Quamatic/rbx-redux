@@ -25,7 +25,7 @@ local function bindActionCreators(
 	end
 
 	if typeof(actionCreators) ~= "table" then
-		error(`bindActionCreators expected an object or a function, but instead received: {typeof(actionCreators)}`)
+		error(`bindActionCreators expected an object or a function, but instead received: '{typeof(actionCreators)}'`)
 	end
 
 	local boundActionCreators: actions.ActionCreatorsMapObject = {}
