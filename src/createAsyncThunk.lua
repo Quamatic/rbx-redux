@@ -289,6 +289,7 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 		typePrefix = typePrefix,
 	}, {
 		__call = function(_, arg: ThunkArg)
+			-- TODO: Add self to `actionCreator` to prevent creating another function?
 			return actionCreator(arg)
 		end,
 	}) :: CreateAsyncThunk<AsyncThunkConfig>
