@@ -9,6 +9,9 @@ All redux packages (dev-tools, thunk, etc.) are bundled into just this one packa
 # Limitations
 The only real limitation is the translations of typings. Many of Redux's types are impossible to translate due to Luau just not being able to convert them (atleast directly 1:1). With that being said, the best of effort was done to convert them.
 
+# Motivation
+The motivation to do this was because I was bored. And because I wanted the modern features of Redux, mainly those from the toolkit package. Does a 1:1 translation of the entire library make much sense. No, not really. But then again, I was bored!
+
 # To-do
 - [ ] Make the package fully typed
 - [ ] Export all typings to the entry file
