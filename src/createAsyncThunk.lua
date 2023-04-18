@@ -167,6 +167,8 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 			local finalAction: typeof(fulfilled) | typeof(rejected)
 			local promise: Promise<typeof(finalAction)>
 
+			-- TODO: Finish this, and make sure aborting doesnt break the entire operation.
+
 			promise = Promise.new(function(resolve, reject, onCancel)
 				local conditionResult = nil
 
