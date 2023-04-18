@@ -11,6 +11,9 @@ local createReducer = require(script.createReducer)
 local combineReducers = require(script.combineReducers)
 local nanoid = require(script.nanoid)
 
+local thunk = require(script.thunk)
+local getDefaultMiddleware = require(script.getDefaultMiddleware)
+
 return {
 	configureStore = configureStore,
 	createAction = createAction,
@@ -24,5 +27,7 @@ return {
 	compose = compose,
 	applyMiddleware = applyMiddleware,
 	bindActionCreator = bindActionCreator,
+	thunkMiddleware = thunk.thunk,
+	getDefaultMiddleware = getDefaultMiddleware.getDefaultMiddleware,
 	nanoid = nanoid,
 }

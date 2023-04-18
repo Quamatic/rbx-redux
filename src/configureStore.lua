@@ -32,7 +32,7 @@ type ConfigureStoreOptions<S = any, A = actions.AnyAction, M = Middlewares<S>, E
 type Middlewares<S> = { middlewareTypes.Middleware<{}, S, {}> }
 type Enhancers = { {} }
 
-export type ToolkitStore<S = any, A = actions.AnyAction, M = Middlewares<S>> = {
+export type ToolkitStore<S = any, A = actions.AnyAction, M = Middlewares<S>> = store.Store<S, A, {}> & {
 	dispatch: store.Dispatch<A>,
 }
 
@@ -58,8 +58,6 @@ local function configureStore<S, A, M, E>(options: ConfigureStoreOptions<S, A, M
 			'"reducer" is a required argument, and must be a function or an object of functions that can be passed to combineReducers'
 		)
 	end
-
-	print(middleware)
 
 	local finalMiddleware = middleware
 	if typeof(finalMiddleware) == "function" then
