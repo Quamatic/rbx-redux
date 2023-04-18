@@ -3,6 +3,8 @@ An (almost) 1:1 conversion of the JS state management library Redux.
 
 This is extremely unfinished right now, so use at your own risk. (I haven't even tested if it works, so... But I'll do that eventually. It's just a proof of concept for the most part.)
 
+The package could also be heavily unoptimized at the moment for a Luau environment. The reason was because I was writing this extremely quickly and only made a few things optimized directly for Luau.
+
 # Packages
 All redux packages (dev-tools, thunk, etc.) are bundled into just this one package. I might change my mind and turn them all into seperate packages, but for now this is how it is designed.
 
