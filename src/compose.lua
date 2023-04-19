@@ -31,8 +31,6 @@ local function compose(...: Function): ComposeFn
 		return funcs[1]
 	end
 
-	print(funcs)
-
 	return reduce(funcs, function(a, b)
 		return function(...)
 			return a(b(...))
