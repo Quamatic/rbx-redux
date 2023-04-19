@@ -4,10 +4,10 @@ local function reduce<T>(
 	callbackFn: (accumulator: T, currentValue: T, currentIndex: number, array: { T }) -> any,
 	initialValue
 )
-	local result = initialValue
+	local result = initialValue or arr[1]
 
-	for index, value in arr do
-		result = callbackFn(result, value, index, arr)
+	for i = 2, #arr do
+		result = callbackFn(result, arr[i], i - 1, arr)
 	end
 
 	return result
@@ -18,15 +18,20 @@ type ComposeFn<Funcs...> = (Funcs...) -> Function
 
 -- Equivalent to Redux's `compose` function.
 local function compose(...: Function): ComposeFn
-	local funcs = table.pack(...) :: { Function } & { n: number }
+	local funcs = { ... } :: { Function } & { n: number }
+	local len = #funcs
 
-	if funcs.n == 0 then
+	if len == 0 then
 		return function<T>(arg: T)
 			return arg
 		end
-	elseif funcs.n == 1 then
-		return funcs[0]
 	end
+
+	if len == 1 then
+		return funcs[1]
+	end
+
+	print(funcs)
 
 	return reduce(funcs, function(a, b)
 		return function(...)

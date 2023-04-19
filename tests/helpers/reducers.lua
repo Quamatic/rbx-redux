@@ -57,4 +57,12 @@ exports.unsubscribeInTheMiddleOfReducer = function(state, action)
 	return state
 end
 
+exports.errorThrowingReducer = function(state, action)
+	state = state or {}
+
+	if action.type == actionTypes.THROW_ERROR then
+		error()
+	end
+end
+
 return exports

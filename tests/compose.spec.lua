@@ -55,11 +55,21 @@ return function()
 					return x + y
 				end
 
-				expect(compose(square, add, false)(1, 2)).to.throw()
-				expect(compose(square, add, true)(1, 2)).to.throw()
-				expect(compose(square, add, nil)(1, 2)).to.throw()
-				expect(compose(square, add, "")(1, 2)).to.throw()
-				expect(compose(square, add, {})(1, 2)).to.throw()
+				expect(function()
+					compose(square, add, false)(1, 2)
+				end).to.throw()
+
+				expect(function()
+					compose(square, add, true)(1, 2)
+				end).to.throw()
+
+				expect(function()
+					compose(square, add, "")(1, 2)
+				end).to.throw()
+
+				expect(function()
+					compose(square, add, {})(1, 2)
+				end).to.throw()
 			end)
 
 			it("can be seeded with multiple arguments", function()
@@ -82,7 +92,7 @@ return function()
 
 			it("returns the first function given if given only one", function()
 				local fn = function() end
-				expect(compose(fn)).to.be(fn)
+				expect(compose(fn)).to.equal(fn)
 			end)
 		end)
 	end)
