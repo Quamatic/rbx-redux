@@ -70,6 +70,10 @@ local function createAction<Args...>(type: string, prepareAction: PreparedAction
 	return setmetatable({
 		type = type,
 		[ACTION] = true,
+
+		match = function(other)
+			return type == other.type
+		end,
 	}, {
 		__call = function(_self: any, ...: Args...)
 			local args = { ... }
@@ -93,10 +97,6 @@ local function createAction<Args...>(type: string, prepareAction: PreparedAction
 
 		__tostring = function()
 			return type
-		end,
-
-		match = function(self, other)
-			return self.type == other.type
 		end,
 	})
 end

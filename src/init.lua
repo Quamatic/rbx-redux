@@ -16,7 +16,8 @@ local getDefaultMiddleware = require(script.getDefaultMiddleware)
 
 return {
 	configureStore = configureStore,
-	createAction = createAction,
+	createAction = createAction.createAction,
+	isAction = createAction.isAction,
 	createSlice = createSlice,
 	createStore = createStore,
 	createSelector = createSelector,

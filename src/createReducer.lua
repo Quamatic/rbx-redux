@@ -19,10 +19,10 @@ local function reduce<T>(
 	callbackFn: (accumulator: T, currentValue: T, currentIndex: number, array: { T }) -> any,
 	initialValue
 )
-	local result = initialValue
+	local result = initialValue or arr[1]
 
-	for index, value in arr do
-		result = callbackFn(result, value, index, arr)
+	for i = 1, #arr do
+		result = callbackFn(result, arr[i], i - 1, arr)
 	end
 
 	return result
@@ -46,12 +46,11 @@ local function createReducer<S>(
 	local getInitialState: () -> S
 	if typeof(initialState) == "function" then
 		getInitialState = function()
-			return table.freeze(initialState())
+			return initialState()
 		end
 	else
-		local frozenInitialState = if not table.isfrozen(initialState) then table.freeze(initialState) else initialState
 		getInitialState = function()
-			return frozenInitialState
+			return initialState
 		end
 	end
 
@@ -65,7 +64,7 @@ local function createReducer<S>(
 			end
 		end
 
-		local caseReducers = merge(actionsMap[action.type], filteredFinalActionReducers)
+		local caseReducers = merge({ actionsMap[action.type] }, filteredFinalActionReducers)
 		local nonnullAssertions = table.create(#caseReducers)
 
 		for _, cr in caseReducers do
@@ -80,27 +79,13 @@ local function createReducer<S>(
 
 		return reduce(caseReducers, function(previousState, caseReducer): S
 			if caseReducer then
-				if typeof(previousState) ~= "table" then
-					local draft = previousState
-					local result = caseReducer(draft, action)
+				local result = caseReducer(previousState, action)
 
-					if result == nil then
-						return previousState
-					end
-
-					return result :: S
-				else
-					local result = caseReducer(previousState :: any, action)
-
-					if result == nil then
-						if previousState == nil then
-							return previousState
-						end
-						error("A case reducer on a non-table value must not return nil")
-					end
-
-					return result :: S
+				if result == nil then
+					return previousState
 				end
+
+				return result :: S
 			end
 
 			return previousState

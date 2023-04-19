@@ -2,6 +2,8 @@ local createAction = require(script.Parent.createAction).createAction
 local createReducer = require(script.Parent.createReducer)
 local merge = require(script.Parent.merge)
 
+local executeReducerBuilderCallback = require(script.Parent.mapBuilders).executeReducerBuilderCallback
+
 export type SliceParameters<T> = {
 	name: string,
 	initialState: T,
@@ -37,7 +39,7 @@ end
 --
 local function createSlice<S>(options: SliceParameters<S>): SliceObject<S>
 	local name = options.name
-	if name == nil then
+	if name == nil or name == "" then
 		error("`name` is a required option for createSlice")
 	end
 
@@ -72,17 +74,30 @@ local function createSlice<S>(options: SliceParameters<S>): SliceObject<S>
 	end
 
 	local function buildReducer()
-		local extraReducers = { options.extraReducers }
-		local actionMatchers = {}
-		local defaultCaseReducer = nil
+		-- TODO: fix this ugly weirdo stuff
+
+		local extraReducersResults = if typeof(options.extraReducers) == "function"
+			then { executeReducerBuilderCallback(options.extraReducers) }
+			else { options.extraReducers }
+
+		local extraReducers, actionMatchers, defaultCaseReducer = unpack(extraReducersResults)
+
+		if extraReducers == nil then
+			extraReducers = {}
+		end
+
+		if actionMatchers == nil then
+			actionMatchers = {}
+		end
+
 		local finalCaseReducers = merge(sliceCaseReducersByType, extraReducers)
 
 		return createReducer(initialState, function(builder)
-			for key in finalCaseReducers do
-				builder.addCase(key, finalCaseReducers[key])
+			for key, value in finalCaseReducers do
+				builder.addCase(key, value)
 			end
 
-			for m in actionMatchers do
+			for _, m in actionMatchers do
 				builder.addMatcher(m.matcher, m.reducer)
 			end
 

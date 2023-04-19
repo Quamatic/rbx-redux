@@ -3,7 +3,19 @@ local Redux = require(ReplicatedStorage.Redux)
 
 local actionCreators = require(script.Parent.helpers.actionCreators)
 local todos = require(script.Parent.helpers.reducers).todos
+
 local merge = require(script.Parent.helpers.merge)
+local deepEquals = require(script.Parent.helpers.deepEquals)
+
+-- Need this because functions wont be the same
+local function equalKeys(t1, t2)
+	for key in t1 do
+		if t2[key] == nil then
+			return false
+		end
+	end
+	return true
+end
 
 return function()
 	describe("bindActionCreators", function()
@@ -23,11 +35,11 @@ return function()
 
 		it("wraps the action creators with the dispatch function", function()
 			local boundActionCreators = Redux.bindActionCreators(actionCreators, store.dispatch)
-			expect(boundActionCreators).to.equal(actionCreatorFunctons)
+			expect(equalKeys(boundActionCreators, actionCreatorFunctons)).to.equal(true)
 
 			local action = boundActionCreators.addTodo("Hello")
-			expect(action).to.equal(actionCreators.addTodo("Hello"))
-			expect(store.getState()).to.equal({ { id = 1, text = "Hello" } })
+			expect(deepEquals(action, actionCreators.addTodo("Hello"))).to.equal(true)
+			expect(deepEquals(store.getState(), { { id = 1, text = "Hello" } })).to.equal(true)
 		end)
 
 		it("wraps action creators transparently", function()
@@ -43,7 +55,7 @@ return function()
 			local boundAction = boundActionCreator(uniqueThis, argArray)
 			local action = actionCreator(uniqueThis, argArray)
 
-			expect(boundAction).to.equal(action)
+			expect(deepEquals(boundAction, action)).to.equal(true)
 			expect(boundAction.this).to.equal(uniqueThis)
 			expect(action.this).to.equal(uniqueThis)
 		end)
@@ -59,7 +71,7 @@ return function()
 				store.dispatch
 			)
 
-			expect(boundActionCreators).to.equal(actionCreatorFunctons)
+			expect(equalKeys(boundActionCreators, actionCreatorFunctons)).to.equal(true)
 		end)
 
 		it("supports wrapping a single function only", function()
@@ -67,8 +79,8 @@ return function()
 			local boundActionCreator = Redux.bindActionCreators(actionCreator, store.dispatch)
 
 			local action = boundActionCreator("Hello")
-			expect(action).to.equal(actionCreator("Hello"))
-			expect(store.getState()).to.equal({ { id = 1, text = "Hello" } })
+			expect(deepEquals(action, actionCreator("Hello"))).to.equal(true)
+			expect(deepEquals(store.getState(), { { id = 1, text = "Hello" } })).to.equal(true)
 		end)
 
 		it("throws for a nil actionCreator", function()

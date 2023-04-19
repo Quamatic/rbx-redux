@@ -1,6 +1,8 @@
 local store = require(script.Parent.types.store)
 local reducers = require(script.Parent.types.reducers)
 
+local ActionTypes = require(script.Parent.utils.actionTypes)
+
 type StoreEnhancerStoreCreator<Ext = {}, StateExt = {}> = (
 ) -> <S, A, PreloadedState>(
 	reducer: reducers.Reducer<S, A, PreloadedState>,
@@ -36,10 +38,23 @@ type Store<S = any, A = any, StateExt = {}> = {
 local function createStore<S, A, Ext, StateExt, PreloadedState>(
 	reducer: reducers.Reducer<S, A, PreloadedState>,
 	preloadedState: PreloadedState | StoreEnhancer<Ext, StateExt>?,
-	enhancer: StoreEnhancer<Ext, StateExt>?
+	enhancer: StoreEnhancer<Ext, StateExt>?,
+	-- Dont use this argument
+	_fakeEnhancerArg: StoreEnhancer<Ext, StateExt>?
 ): Store<S, A, StateExt> & Ext
 	if typeof(reducer) ~= "function" then
 		error(`Expected the root reducer to be a function. Instead, received: {typeof(reducer)}`, 2)
+	end
+
+	if
+		(typeof(preloadedState) == "function" and typeof(enhancer) == "function")
+		or (typeof(enhancer) == "function" and typeof(_fakeEnhancerArg) == "function")
+	then
+		error(
+			"It looks like you are passing several store enhancers to "
+				+ "createStore(). This is not supported. Instead, compose them "
+				+ "together to a single function. See https://redux.js.org/tutorials/fundamentals/part-4-store#creating-a-store-with-enhancers for an example."
+		)
 	end
 
 	if typeof(preloadedState) == "function" and enhancer == nil then
@@ -85,6 +100,13 @@ local function createStore<S, A, Ext, StateExt, PreloadedState>(
 	end
 
 	local function dispatch(action)
+		if typeof(action) ~= "table" then
+			error(
+				`Actions must be plain objects. Instead, the actual type was: {typeof(action)}`
+					.. `You may need to add middleware to your store setup to handle dispatching other values, such as 'redux-thunk' to handle dispatching functions. See https://redux.js.org/tutorials/fundamentals/part-4-store#middleware and https://redux.js.org/tutorials/fundamentals/part-6-async-logic#using-the-redux-thunk-middleware for examples.`
+			)
+		end
+
 		if action.type == nil then
 			error(
 				`Actions may not have an undefined "type" property. You may have misspelled an action type string constant.`
@@ -103,10 +125,13 @@ local function createStore<S, A, Ext, StateExt, PreloadedState>(
 		isDispatching = false
 
 		if not ok then
-			task.spawn(error, `Caught error in reducer while dispatching: {problem}`)
+			error(`Caught error in reducer while dispatching: {problem}`)
 		end
 
-		for _, listener in nextListeners do
+		currentListeners = nextListeners
+		local listeners = currentListeners
+
+		for _, listener in listeners do
 			task.spawn(listener)
 		end
 
@@ -127,7 +152,7 @@ local function createStore<S, A, Ext, StateExt, PreloadedState>(
 			)
 		end
 
-		local isSubscribed = false
+		local isSubscribed = true
 
 		ensureCanMutateNextListeners()
 
@@ -161,7 +186,7 @@ local function createStore<S, A, Ext, StateExt, PreloadedState>(
 		end
 
 		currentReducer = (nextReducer :: any) :: reducers.Reducer<S, A, PreloadedState>
-		dispatch({ type = "REPLACE" } :: A)
+		dispatch({ type = ActionTypes.REPLACE } :: A)
 	end
 
 	local function destruct()
@@ -169,7 +194,7 @@ local function createStore<S, A, Ext, StateExt, PreloadedState>(
 		currentListeners = nil
 	end
 
-	dispatch({ type = "$$INIT" })
+	dispatch({ type = ActionTypes.INIT })
 
 	return {
 		getState = getState,

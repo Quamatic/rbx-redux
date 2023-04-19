@@ -1,4 +1,6 @@
 local function spy(fn)
+	fn = fn or function() end
+
 	local calls = {}
 
 	local function spyFn(...)

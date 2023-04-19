@@ -44,7 +44,7 @@ local function executeReducerBuilderCallback<S>(builderCallback: (builder: Actio
 			error("builder.addMatcher should only be called before calling 'builder.addDefaultCase'", 2)
 		end
 
-		table.insert(actionMatchers, { matcher, reducer })
+		table.insert(actionMatchers, { matcher = matcher, reducer = reducer })
 		return builder
 	end
 

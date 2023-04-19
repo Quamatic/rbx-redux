@@ -52,9 +52,9 @@ local function getUnexpectedStateShapeWarningMessage(
 
 	if #unexpectedKeys > 0 then
 		return `Unexpected {if #unexpectedKeys > 1 then "keys" else "key"} `
-			.. `"{table.concat(unexpectedKeys, '", "')}" found in ${argumentName}. `
+			.. `"{table.concat(unexpectedKeys, '", "')}" found in {argumentName}. `
 			.. `Expected to find one of the known reducer keys instead: `
-			.. `"${table.concat(reducerKeys, '", "')}". Unexpected keys will be ignored.`
+			.. `"{table.concat(reducerKeys, '", "')}". Unexpected keys will be ignored.`
 	end
 end
 
@@ -64,7 +64,7 @@ local function assertReducerShape(reducers: ReducerMap)
 
 		if initialState == nil then
 			error(
-				`The slice reducer for key "${key}" returned undefined during initialization.`
+				`The slice reducer for key "{key}" returned nil during initialization.`
 					.. `If the state passed to the reducer is undefined, you must `
 					.. `explicitly return the initial state. The initial state may `
 					.. `not be undefined. If you don't want to set a value for this reducer,`
@@ -76,8 +76,8 @@ local function assertReducerShape(reducers: ReducerMap)
 			type = ActionTypes.PROBE_UNKNOWN_ACTION(),
 		}) == nil then
 			error(
-				`The slice reducer for key "${key}" returned undefined when probed with a random type. `
-					.. `Don't try to handle '${"INIT"}' or other actions in "redux/*" `
+				`The slice reducer for key ${key}" returned undefined when probed with a random type. `
+					.. `Don't try to handle '{ActionTypes.INIT}' or other actions in "redux/*" `
 					.. `namespace. They are considered private. Instead, you must return the `
 					.. `current state for any unknown actions, unless it is undefined, `
 					.. `in which case you must return the initial state, regardless of the `
@@ -102,17 +102,16 @@ local function combineReducers(reducers: ReducerMap)
 	local _, shapeAssertionError = pcall(assertReducerShape, finalReducers)
 
 	return function(state, action)
+		state = state or {}
+
 		if shapeAssertionError then
 			error(shapeAssertionError)
 		end
 
-		if getfenv().development then
-			local warningMessage =
-				getUnexpectedStateShapeWarningMessage(state, finalReducers, action, unexpectedKeyCache)
+		local warningMessage = getUnexpectedStateShapeWarningMessage(state, finalReducers, action, unexpectedKeyCache)
 
-			if warningMessage then
-				warn(warningMessage)
-			end
+		if warningMessage then
+			warn(warningMessage)
 		end
 
 		local hasChanged = false
@@ -122,7 +121,7 @@ local function combineReducers(reducers: ReducerMap)
 			local previousStateForKey = state[key]
 			local nextStateForKey = reducer(previousStateForKey, action)
 
-			if typeof(nextStateForKey) == "function" then
+			if typeof(nextStateForKey) == "nil" then
 				local actionType = action and action.type
 				error(
 					`When called with an action of type {if actionType then tostring(actionType) else "(unknown type),"}, the slice reducer for key "{key}" returned undefined.`
