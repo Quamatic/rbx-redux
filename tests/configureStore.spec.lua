@@ -5,6 +5,8 @@ local spy = require(script.Parent.helpers.spy)
 
 local originalNamespaceMethods = {}
 
+-- Quick & dirty `jest.spyOn` method
+
 local function clearAllMocks()
 	for originalMethod, orignalMethodFn in originalNamespaceMethods do
 		Redux[originalMethod] = orignalMethodFn

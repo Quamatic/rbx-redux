@@ -87,12 +87,14 @@ local function createAction<Args...>(type: string, prepareAction: PreparedAction
 				return merge({
 					type = type,
 					payload = prepared.payload,
-					prepared.meta and { meta = prepared.meta },
-					prepared.err and { error = prepared.error },
-				})
+				}, prepared.meta and { meta = prepared.meta }, prepared.error and { error = prepared.error })
 			end
 
 			return { type = type, payload = args[1] }
+		end,
+
+		__eq = function(self, other)
+			return self.type == other.type
 		end,
 
 		__tostring = function()
