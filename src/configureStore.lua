@@ -61,7 +61,7 @@ local function configureStore<S, A, M, E>(options: ConfigureStoreOptions<S, A, M
 
 	local finalMiddleware = middleware
 	if typeof(finalMiddleware) == "function" then
-		finalMiddleware = finalMiddleware()
+		finalMiddleware = finalMiddleware(curriedGetDefaultMiddleware)
 
 		if typeof(finalMiddleware) ~= "table" then
 			error("When using a middleware builder function, an array of middleware must be returned")

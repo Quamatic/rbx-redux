@@ -9,6 +9,10 @@ local function spy(fn)
 	end
 
 	return {
+		hasBeenCalled = function()
+			return #calls ~= 0
+		end,
+
 		wasCalledWith = function(...)
 			for _, args in calls do
 				if #args == select("#", ...) then
