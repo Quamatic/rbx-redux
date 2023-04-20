@@ -2,17 +2,7 @@ local MiddlewareArray = {}
 MiddlewareArray.__index = MiddlewareArray
 
 function MiddlewareArray.new(...)
-	return setmetatable({
-		_middlewares = { ... },
-	}, MiddlewareArray)
-end
-
-function MiddlewareArray:get()
-	return self._middlewares
-end
-
-function MiddlewareArray:push(middleware)
-	table.insert(self._middlewares, middleware)
+	return setmetatable({ ... }, MiddlewareArray)
 end
 
 function MiddlewareArray:concat(...: any) end

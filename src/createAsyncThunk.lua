@@ -2,9 +2,9 @@ local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- TODO: Either check if the user has the Promise package or add it as a dependency.
-local Promise = {}
+local Promise = require(script.Parent.Promise)
 
-local createAction = require(script.Parent.createAction)
+local createAction = require(script.Parent.createAction).createAction
 local merge = require(script.Parent.merge)
 
 -- TODO: is this even necessary?
@@ -160,7 +160,7 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 
 	local function actionCreator(arg: ThunkArg): AsyncThunkAction<Returned, ThunkArg, ThunkApiConfig>
 		return function(dispatch, getState, extra)
-			local requestId = if options.idGenerator ~= nil
+			local requestId = if options and options.idGenerator ~= nil
 				then options.idGenerator(arg)
 				else HttpService:GenerateGUID(false)
 
@@ -172,7 +172,7 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 			promise = Promise.new(function(resolve, reject, onCancel)
 				local conditionResult = nil
 
-				if options.condition then
+				if options and options.condition then
 					conditionResult = options.condition(arg, { getState = getState, extra = extra })
 
 					-- We only accept promises. This is equal to Redux's `isThenable` function.
@@ -183,6 +183,7 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 
 				-- Semantically the same as Redux's abort method
 				if conditionResult == false or onCancel() then
+					print("Aborting! (1)")
 					return reject({
 						name = "ConditionError",
 						message = "Aborted due to condition callback returning false.",
@@ -194,14 +195,14 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 					onCancel_(function()
 						reject_({
 							name = "AbortError",
-							reason = "",
+							reason = "Aborted",
 						})
 					end)
 				end)
 
 				-- Dispatch pending action
 				local pendingMetaResult: any
-				if options.getPendingMeta then
+				if options and options.getPendingMeta then
 					pendingMetaResult = options.getPendingMeta(
 						{ requestId = requestId, arg = arg },
 						{ getState = getState, extra = extra }
@@ -225,6 +226,9 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 							promise = nil
 						end,
 
+						onAborted = function() end,
+						aborted = false,
+
 						rejectWithValue = function(value: any, meta: any?)
 							return {
 								[Result] = REJECTED,
@@ -244,13 +248,15 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 				}))
 			end)
 				:andThen(function(result)
-					if result[Result] == REJECTED then
-						return Promise.reject(result)
-					elseif result[Result] == FULFILLED then
-						return fulfilled(result.payload, requestId, arg, result.meta)
+					if typeof(result) == "table" then
+						if result[Result] == REJECTED then
+							return Promise.reject(result)
+						elseif result[Result] == FULFILLED then
+							finalAction = fulfilled(result.payload, requestId, arg, result.meta)
+						end
 					end
 
-					return fulfilled(result, requestId, arg)
+					finalAction = fulfilled(result, requestId, arg)
 				end)
 				:catch(function(err)
 					-- Make the final action whatever the error was
@@ -261,10 +267,11 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 				:andThen(function()
 					local skipDispatch = options
 						and not options.dispatchConditionRejection
-						and rejected:match(finalAction)
+						and rejected.match(finalAction)
 						and finalAction.meta.condition
 
-					if skipDispatch then
+					if not skipDispatch then
+						print("little too sus")
 						dispatch(finalAction)
 					end
 
@@ -272,14 +279,18 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 				end)
 
 			-- Redux assigns fields to the promise with Object.assign here
-			return {
-				promise = promise,
+			-- but instead we have to do some metatable magic to get the same result
+			-- Why is javascript so stupid? Why are functions objects?
+
+			return setmetatable({
 				requestId = requestId,
 				arg = arg,
 				unwrap = function()
 					return promise:andThen(unwrapResult)
 				end,
-			}
+			}, {
+				__index = promise,
+			})
 		end
 	end
 

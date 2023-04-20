@@ -42,7 +42,7 @@ local function configureStore<S, A, M, E>(options: ConfigureStoreOptions<S, A, M
 	local curriedGetDefaultMiddleware = curryGetDefaultMiddleware()
 
 	local reducer = options.reducer
-	local middleware = options.middleware or curriedGetDefaultMiddleware():get()
+	local middleware = options.middleware or curriedGetDefaultMiddleware()
 	local devTools = options.devTools or false
 	local preloadedState = options.preloadedState
 	local enhancers = options.enhancers
@@ -85,7 +85,7 @@ local function configureStore<S, A, M, E>(options: ConfigureStoreOptions<S, A, M
 		}, typeof(devTools) == "table" and devTools))
 	end
 
-	local defaultEnhancers = EnhancerArray.new(middlewareEnhancer)._enhancers
+	local defaultEnhancers = EnhancerArray.new(middlewareEnhancer)
 	local storeEnhancers: Enhancers = defaultEnhancers
 
 	if isArray(enhancers) then

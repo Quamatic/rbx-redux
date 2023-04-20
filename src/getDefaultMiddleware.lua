@@ -40,9 +40,9 @@ local function getDefaultMiddleware(options: GetDefaultMiddlewareOptions?): Midd
 
 	if thunk then
 		if isBoolean(thunk) then
-			middlewareArray:push(thunkMiddleware)
+			table.insert(middlewareArray, thunkMiddleware)
 		else
-			middlewareArray:push(thunkMiddleware.withExtraArgument(thunk.extraArgument))
+			table.insert(middlewareArray, thunkMiddleware.withExtraArgument(thunk.extraArgument))
 		end
 	end
 
