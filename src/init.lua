@@ -31,6 +31,7 @@ return {
 	applyMiddleware = applyMiddleware,
 	bindActionCreators = bindActionCreators,
 	thunkMiddleware = thunk.thunk,
+	createThunkMiddleware = thunk.withExtraArgument,
 	getDefaultMiddleware = getDefaultMiddleware.getDefaultMiddleware,
 	autoBatchEnhancer = autoBatchEnhancer.autoBatchEnhancer,
 	prepareAutoBatched = autoBatchEnhancer.prepareAutoBatched,
