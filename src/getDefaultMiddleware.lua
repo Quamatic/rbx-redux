@@ -5,6 +5,8 @@ type MiddlewareArray = MiddlewareArray.MiddlewareArray
 
 -- Same as Redux importing from 'redux-thunk'
 local thunkMiddleware = require(script.Parent.thunk)
+local createImmutableStateInvariantMiddleware =
+	require(script.Parent.immutableStateInvariantMiddleware).immutableStateInvariantMiddleware
 
 local function isBoolean(x: any)
 	return typeof(x) == "boolean"
@@ -35,7 +37,7 @@ local defaultMiddlewareOptions: GetDefaultMiddlewareOptions = {
 local function getDefaultMiddleware(options: GetDefaultMiddlewareOptions?): MiddlewareArray
 	options = merge(defaultMiddlewareOptions, options or {})
 
-	local thunk, _immutableCheck, _serializableCheck = options.thunk, options.immutableCheck, options.serializableCheck
+	local thunk, immutableCheck, serializableCheck = options.thunk, options.immutableCheck, options.serializableCheck
 	local middlewareArray = MiddlewareArray.new()
 
 	if thunk then
@@ -43,6 +45,23 @@ local function getDefaultMiddleware(options: GetDefaultMiddlewareOptions?): Midd
 			table.insert(middlewareArray, thunkMiddleware.thunk)
 		else
 			table.insert(middlewareArray, thunkMiddleware.withExtraArgument(thunk.extraArgument))
+		end
+	end
+
+	if getfenv().production then
+		if immutableCheck then
+			local immutableOptions = {}
+
+			if not isBoolean(immutableCheck) then
+				immutableOptions = immutableCheck
+			end
+
+			table.insert(immutableOptions, 1, createImmutableStateInvariantMiddleware(immutableOptions))
+		end
+
+		if serializableCheck then
+			-- TODO
+			warn("serializableCheck is not currently implemented")
 		end
 	end
 
