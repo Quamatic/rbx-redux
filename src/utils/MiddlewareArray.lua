@@ -1,3 +1,5 @@
+local isArray = require(script.Parent.isArray)
+
 local MiddlewareArray = {}
 MiddlewareArray.__index = MiddlewareArray
 
@@ -8,9 +10,10 @@ end
 function MiddlewareArray:concat(...: any) end
 
 function MiddlewareArray:prepend(...: any)
-	local args = table.pack(...)
-	if args.n == 1 and #args[0] ~= 0 then
-		return MiddlewareArray.new(table.concat(args[0]))
+	local args = { ... }
+
+	if #args == 1 and isArray(args[1]) then
+		return MiddlewareArray.new(table.concat(args[1]))
 	end
 
 	return MiddlewareArray.new(table.concat(self))

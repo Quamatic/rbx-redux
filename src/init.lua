@@ -13,6 +13,8 @@ local nanoid = require(script.nanoid)
 
 local thunk = require(script.thunk)
 local getDefaultMiddleware = require(script.getDefaultMiddleware)
+local autoBatchEnhancer = require(script.autoBatchEnhancer)
+local createImmutableStateInvariantMiddleware = require(script.immutableStateInvariantMiddleware)
 
 return {
 	configureStore = configureStore,
@@ -30,5 +32,11 @@ return {
 	bindActionCreators = bindActionCreators,
 	thunkMiddleware = thunk.thunk,
 	getDefaultMiddleware = getDefaultMiddleware.getDefaultMiddleware,
+	autoBatchEnhancer = autoBatchEnhancer.autoBatchEnhancer,
+	prepareAutoBatched = autoBatchEnhancer.prepareAutoBatched,
+	-- @internal
+	__INTERNAL__trackForMutations = createImmutableStateInvariantMiddleware.trackForMutations,
+	createImmutableStateInvariantMiddleware = createImmutableStateInvariantMiddleware.immutableStateInvariantMiddleware,
+	isImmutableDefault = createImmutableStateInvariantMiddleware.isImmutableDefault,
 	nanoid = nanoid,
 }

@@ -1,5 +1,7 @@
 local RunService = game:GetService("RunService")
 
+local merge = require(script.Parent.merge)
+
 local SHOULD_AUTOBATCH = "RTK_autoBatch"
 
 local prepareAutoBatched = function<T>()
@@ -12,18 +14,18 @@ local prepareAutoBatched = function<T>()
 end
 
 -- This should be equal to setTimeout(fn, 0)
-local queueMicrotaskShim = task.defer
+local queueMicrotaskShim = function(notify: () -> nil)
+	task.defer(notify)
+end
 
 local createQueueWithTimer = function(timeout: number)
 	return function(notify: () -> nil)
-		task.delay(notify, timeout)
+		task.delay(timeout / 1000, notify)
 	end
 end
 
 -- Redux internally uses requestAnimationFrame, but RunService.RenderStepped is the exact equivalent
-local rAF = function()
-	return RunService.RenderStepped:Wait()
-end
+local rAF = queueMicrotaskShim
 
 export type AutoBatchOptions = {
 	type: "tick",
@@ -49,6 +51,7 @@ local autoBatchEnhancer = function(options: AutoBatchOptions)
 			local notificationQueued = false
 
 			local listeners = {}
+
 			local queueCallback = if options.type == "tick"
 				then queueMicrotaskShim
 				else if options.type == "raf"
@@ -62,48 +65,56 @@ local autoBatchEnhancer = function(options: AutoBatchOptions)
 
 				if shouldNotifyAtEndOfTick then
 					shouldNotifyAtEndOfTick = false
-					for _, listener in listeners do
+					for listener in listeners do
 						listener()
 					end
 				end
 			end
 
-			local subscribe = store.subscribe
-			local dispatch = store.dispatch
-
-			store.subscribe = function(listener: () -> nil)
-				local wrappedListener: typeof(listener) = notifying and listener()
-				local unsubscribe = subscribe(wrappedListener)
-
-				listener[listener] = true
-
-				return function()
-					unsubscribe()
-					listeners[listener] = nil
-				end
-			end
-
-			store.dispatch = function(action: any)
-				local success, result = pcall(function()
-					notifying = action and action.meta and action[SHOULD_AUTOBATCH]
-					shouldNotifyAtEndOfTick = not notifying
-
-					if shouldNotifyAtEndOfTick then
-						if not notificationQueued then
-							notificationQueued = true
-							queueCallback(notifyListeners)
+			return merge({}, store, {
+				subscribe = function(listener: () -> nil)
+					local wrappedListener: typeof(listener) = function()
+						if notifying then
+							listener()
 						end
 					end
 
-					return dispatch(action)
-				end)
+					local unsubscribe = store.subscribe(wrappedListener)
+					listeners[listener] = true
 
-				notifying = false
+					return function()
+						unsubscribe()
+						listeners[listener] = nil
+					end
+				end,
 
-				if success then
-					return result
-				end
-			end
+				dispatch = function(action: any)
+					local success, result = pcall(function()
+						local hasRtkAutoBatch = false
+						if action ~= nil and action.meta ~= nil and action.meta[SHOULD_AUTOBATCH] ~= nil then
+							hasRtkAutoBatch = true
+						end
+
+						notifying = not hasRtkAutoBatch
+
+						shouldNotifyAtEndOfTick = not notifying
+						if shouldNotifyAtEndOfTick then
+							if not notificationQueued then
+								notificationQueued = true
+								queueCallback(notifyListeners)
+							end
+						end
+
+						return store.dispatch(action)
+					end)
+
+					notifying = true
+
+					if success then
+						return result
+					end
+				end,
+			})
 		end
 	end
 end

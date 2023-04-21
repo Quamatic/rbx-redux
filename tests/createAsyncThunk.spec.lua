@@ -102,8 +102,6 @@ return function()
 			expect(dispatch.wasNthExactlyCalled(2))
 
 			local errorAction = dispatch.calls[2][1]
-			print(errorAction.error)
-
 			expect(errorAction.meta.requestId).to.equal(generatedRequestId)
 			expect(errorAction.meta.arg).to.equal(args)
 		end)

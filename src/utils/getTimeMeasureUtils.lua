@@ -4,7 +4,7 @@ local function getTimeMeasureUtils(maxDelay: number, fnName: string)
 	return {
 		measureTime = function<T>(fn: () -> T): T
 			local started = os.clock()
-			pcall(fn)
+			fn()
 			elasped += os.clock() - started
 		end,
 

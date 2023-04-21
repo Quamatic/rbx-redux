@@ -7,7 +7,7 @@ local function invariant(condition: any, message: string?)
 		return
 	end
 
-	error()
+	error(message)
 end
 
 type EntryProcessor = (key: string, value: any) -> any
@@ -71,13 +71,13 @@ local function detectMutations(
 ): { wasMutated: boolean, path: string? }
 	ignorePaths = ignorePaths or {}
 	sameParentRef = sameParentRef or false
-	path = path or ""
 
 	local prevObj = if trackedPropery then trackedPropery.value else nil
 
 	local sameRef = prevObj == obj
 
 	if sameParentRef and not sameRef and not isNaN(obj) then
+		print("detection")
 		return { wasMutated = true, path = path }
 	end
 
@@ -103,8 +103,8 @@ local function detectMutations(
 			local hasMatches = false
 
 			local function someFn(ignored: string)
-				if ignored.useStringPattern then
-					return string.match(ignored, nestedPath) ~= nil
+				if typeof(ignored) == "table" and ignored.useStringPattern then
+					return string.match(ignored.path, nestedPath) ~= nil
 				end
 
 				return nestedPath == ignored
@@ -112,6 +112,7 @@ local function detectMutations(
 
 			for _, ignored in ignorePaths do
 				if someFn(ignored) then
+					print("Omg")
 					hasMatches = true
 					break
 				end
@@ -140,7 +141,6 @@ type TrackedProperty = {
 
 local function trackProperties(isImmutable: IsImmutableFunc, ignorePaths: IgnorePaths, obj: any, path: string?)
 	ignorePaths = ignorePaths or {}
-	path = path or ""
 
 	local tracked: TrackedProperty = { value = obj }
 
@@ -257,4 +257,8 @@ local function immutableStateInvariantMiddleware(options: ImmutableStateInvarian
 	end
 end
 
-return immutableStateInvariantMiddleware
+return {
+	trackForMutations = trackForMutations,
+	isImmutableDefault = isImmutableDefault,
+	immutableStateInvariantMiddleware = immutableStateInvariantMiddleware,
+}

@@ -4,7 +4,7 @@ local MiddlewareArray = require(script.Parent.utils.MiddlewareArray)
 type MiddlewareArray = MiddlewareArray.MiddlewareArray
 
 -- Same as Redux importing from 'redux-thunk'
-local thunkMiddleware = require(script.Parent.thunk).thunk
+local thunkMiddleware = require(script.Parent.thunk)
 
 local function isBoolean(x: any)
 	return typeof(x) == "boolean"
@@ -40,7 +40,7 @@ local function getDefaultMiddleware(options: GetDefaultMiddlewareOptions?): Midd
 
 	if thunk then
 		if isBoolean(thunk) then
-			table.insert(middlewareArray, thunkMiddleware)
+			table.insert(middlewareArray, thunkMiddleware.thunk)
 		else
 			table.insert(middlewareArray, thunkMiddleware.withExtraArgument(thunk.extraArgument))
 		end
