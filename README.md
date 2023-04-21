@@ -44,7 +44,7 @@ Although the package is usable, some things may be unoptimized. If you happen to
     - Coming soon!
 
 # Motivation
-I wanted to have the modern features of Redux. Porting most of the library was quite overkill, but it was still fun to do.
+I wanted to have the modern features of Redux. Porting most of the library was quite overkill, but it was still fun to do. This package offers a lot more than Rodux, and (once react-redux is added), goes hand-in-hand with React's rendering.
 
 # To-do
 - [ ] Make the package fully typed
