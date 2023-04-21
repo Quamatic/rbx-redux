@@ -5,7 +5,36 @@ export type DevtoolsEnhancerOptions = {
 	actionCreators: any?,
 	latency: number?,
 	maxAge: number?,
-	trace: boolean?,
+
+	actionSanitizer: <A>(action: A, id: number) -> A?,
+	stateSanitizer: <S>(state: S, index: number) -> S,
+	actionsBlacklist: string | { string }?,
+	actionsDenylist: string | { string }?,
+	actionsAllowlist: string | { string }?,
+	predicate: <S, A>(state: S, action: A) -> boolean,
+
+	shouldRecordChanges: boolean?,
+	pauseActionType: string?,
+	autoPause: boolean?,
+	shouldStartLocked: boolean?,
+	shouldHotReload: boolean?,
+	shouldCatchErrors: boolean?,
+
+	features: {
+		pause: boolean?,
+		lock: boolean?,
+		persist: boolean?,
+		export: boolean | "custom"?,
+		import: boolean | "custom"?,
+		jump: boolean?,
+		skip: boolean?,
+		reorder: boolean?,
+		dispatch: boolean?,
+		test: boolean?,
+	}?,
+
+	trace: boolean | ((action: any) -> string)?,
+	traceLimit: number?,
 }
 
 type Compose = typeof(compose)
@@ -17,13 +46,13 @@ type ComposeWithDevTools = ((options: DevtoolsEnhancerOptions) -> Compose) | (<S
 
 -- !UNFINISHED
 local composeWithDevTools: ComposeWithDevTools = function(...)
-	local args = table.pack(...)
+	local args = { ... }
 
-	if args.n == 0 then
+	if #args == 0 then
 		return nil
 	end
 
-	if typeof(args[0]) == "table" then
+	if typeof(args[1]) == "table" then
 		return compose
 	end
 

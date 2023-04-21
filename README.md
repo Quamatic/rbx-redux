@@ -28,7 +28,7 @@ Although the package is usable, some things may be unoptimized. If you happen to
     - [ ] serializableStateInvariantMiddleware (This might not be super practical to implement, I'll see.)
     - [ ] createListenerMiddleware
     - [ ] creatEntityAdapter
-    - [ ] devtoolsExtension
+    - [ ] devtoolsExtension (This would be quite tough to implement, mainly due to the time it would take. But it is certainly possible.)
     - [ ] Immer (Probably won't be added due to added layer of complexity.)
     - [ ] RTK Query (This will not be implemented, has no practical use on Roblox.)
 
