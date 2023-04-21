@@ -3,6 +3,8 @@ An (almost) 1:1 conversion of the JS state management library Redux.
 
 The package has been heavily tested (with over 200 unit tests!), so it is pretty stable to use atm. If you are experiencing a bug or an issue, please don't hesitate to open an issue!
 
+Although the package is usable, some things may be unoptimized. If you happen to notice something that could be changed, please open a PR.
+
 # What's included?
 
 * Redux
