@@ -5,8 +5,36 @@ This is extremely unfinished right now, so use at your own risk. (I haven't even
 
 The package could also be heavily unoptimized at the moment for a Luau environment. The reason was because I was writing this extremely quickly and only made a few things optimized directly for Luau.
 
-# Packages
-All redux packages (dev-tools, thunk, etc.) are bundled into just this one package. I might change my mind and turn them all into seperate packages, but for now this is how it is designed.
+# What's included?
+
+* Redux
+    - [x] createStore (obviously :P)
+    - [x] bindActionCreators
+    - [x] combineReducers
+    - [x] compose
+    - [x] applyMiddleware
+
+* Redux Devtools
+    - [x] autoBatchEnhancer
+    - [x] getDefaultMiddleware
+    - [x] configureStore
+    - [x] createAction
+    - [x] createAsyncThunk
+    - [x] createReducer
+    - [x] createSlice
+    - [x] immutableStateInvariantMiddleware
+    - [ ] serializableStateInvariantMiddleware
+    - [x] nanoid
+    - [ ] devtoolsExtension
+
+* Redux Thunk
+    - [x] thunkMiddleware
+
+* Reselect
+    - [x] createSelector
+
+* React-Redux
+    - Coming soon!
 
 # Limitations
 The only real limitation is the translations of typings. Many of Redux's types are impossible to translate due to Luau just not being able to convert them (atleast directly 1:1). With that being said, the best of effort was done to convert them.

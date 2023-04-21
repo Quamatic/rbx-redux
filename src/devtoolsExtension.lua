@@ -9,14 +9,14 @@ export type DevtoolsEnhancerOptions = {
 }
 
 type Compose = typeof(compose)
-type ComposeWithDevtools = ((options: DevtoolsEnhancerOptions) -> Compose) | (<StoreExt>(...any) -> any)
+type ComposeWithDevTools = ((options: DevtoolsEnhancerOptions) -> Compose) | (<StoreExt>(...any) -> any)
 
 -- This works completely different than Redux, since we're not in a web environment.
 -- Redux does a check on the window to see if the Devtools Extension is installed.
 -- However, we cannot do that. We need to directly implement it.
 
 -- !UNFINISHED
-local composeWithDevTools: ComposeWithDevtools = function(...)
+local composeWithDevTools: ComposeWithDevTools = function(...)
 	local args = table.pack(...)
 
 	if args.n == 0 then
