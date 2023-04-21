@@ -77,7 +77,6 @@ local function detectMutations(
 	local sameRef = prevObj == obj
 
 	if sameParentRef and not sameRef and not isNaN(obj) then
-		print("detection")
 		return { wasMutated = true, path = path }
 	end
 
@@ -112,7 +111,6 @@ local function detectMutations(
 
 			for _, ignored in ignorePaths do
 				if someFn(ignored) then
-					print("Omg")
 					hasMatches = true
 					break
 				end

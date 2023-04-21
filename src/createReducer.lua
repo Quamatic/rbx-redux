@@ -34,6 +34,8 @@ local function createReducer<S>(
 	actionMatchers: ReadonlyActionMatcherDescriptionCollection<S>,
 	defaultCaseReducer: CaseReducer<S, any>?
 )
+	actionMatchers = actionMatchers or {}
+
 	local actionsMap, finalActionMatchers, finalDefaultCaseReducer
 
 	if typeof(mapOrBuilderCallback) == "function" then
@@ -64,7 +66,11 @@ local function createReducer<S>(
 			end
 		end
 
-		local caseReducers = merge({ actionsMap[action.type] }, filteredFinalActionReducers)
+		local caseReducers = { actionsMap[action.type] }
+		for _, reducer_ in filteredFinalActionReducers do
+			table.insert(caseReducers, reducer_)
+		end
+
 		local nonnullAssertions = table.create(#caseReducers)
 
 		for _, cr in caseReducers do

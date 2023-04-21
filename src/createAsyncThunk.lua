@@ -183,7 +183,6 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 
 				-- Semantically the same as Redux's abort method
 				if conditionResult == false or onCancel() then
-					print("Aborting! (1)")
 					return reject({
 						name = "ConditionError",
 						message = "Aborted due to condition callback returning false.",
@@ -271,7 +270,6 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 						and finalAction.meta.condition
 
 					if not skipDispatch then
-						print("little too sus")
 						dispatch(finalAction)
 					end
 
