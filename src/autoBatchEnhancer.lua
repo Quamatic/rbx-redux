@@ -24,7 +24,8 @@ local createQueueWithTimer = function(timeout: number)
 	end
 end
 
--- Redux internally uses requestAnimationFrame, but RunService.RenderStepped is the exact equivalent
+-- requestAnimationFrame is practically equivalent to RenderStepped, but that can't be used on the server.
+-- For now, this will just act as a deferred frame.
 local rAF = queueMicrotaskShim
 
 export type AutoBatchOptions = {

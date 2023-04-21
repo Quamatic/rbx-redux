@@ -1,0 +1,25 @@
+{
+    "name": "rbx-redux",
+    "tree": {
+        "$className": "DataModel",
+        "ReplicatedStorage": {
+            "$className": "ReplicatedStorage",
+            "$path": "Packages",
+            "Tests": {
+                "$path": "tests"
+            },
+            "Redux": {
+                "$path": "src"
+            }
+        },
+        "TestService": {
+            "$properties": {
+                "ExecuteWithStudioRun": true
+            },
+            "$className": "TestService",
+            "run": {
+                "$path": "test.server.lua"
+            }
+        }
+    }
+}

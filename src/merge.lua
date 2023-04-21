@@ -1,3 +1,4 @@
+-- TODO: move to utils folder
 local function merge<T>(...: any): T
 	local result = {}
 
