@@ -4,6 +4,8 @@ local merge = require(script.Parent.merge)
 
 local executeReducerBuilderCallback = require(script.Parent.mapBuilders).executeReducerBuilderCallback
 
+local hasWarnedAboutObjectNotation = false
+
 export type SliceParameters<T> = {
 	name: string,
 	initialState: T,
@@ -43,6 +45,16 @@ local function createSlice<S>(options: SliceParameters<S>): SliceObject<S>
 		error("`name` is a required option for createSlice")
 	end
 
+	if _G.__DEV__ then
+		if options.initialState == nil then
+			-- Redux uses console.error, this should mimic that?
+			task.spawn(
+				error,
+				"You must provide an `initialState` value that is not `undefined`. You may have misspelled `initialState`"
+			)
+		end
+	end
+
 	-- TODO: fix this
 	local initialState = if typeof(options.initialState) == "table"
 		then table.freeze(options.initialState)
@@ -75,7 +87,18 @@ local function createSlice<S>(options: SliceParameters<S>): SliceObject<S>
 	end
 
 	local function buildReducer()
-		-- TODO: fix this ugly weirdo stuff
+		if _G.__DEV__ then
+			if typeof(options.extraReducers) == "table" then
+				if not hasWarnedAboutObjectNotation then
+					hasWarnedAboutObjectNotation = true
+					warn(
+						"The object notation for `createSlice.extraReducers` is deprecated, and will be removed in RTK 2.0. Please use the 'builder callback' notation instead: https://redux-toolkit.js.org/api/createSlice"
+					)
+				end
+			end
+		end
+
+		-- TODO: fix this mess
 
 		local extraReducersResults = if typeof(options.extraReducers) == "function"
 			then { executeReducerBuilderCallback(options.extraReducers) }

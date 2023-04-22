@@ -1,6 +1,8 @@
 local reduce = require(script.Parent.utils.reduce)
 local executeReducerBuilderCallback = require(script.Parent.mapBuilders).executeReducerBuilderCallback
 
+local hasWarnedAboutObjectNotation = false
+
 export type CaseReducer<S = any, A = {}> = (state: S, action: A) -> nil
 export type CaseReducers<S, ActionUnion> = {
 	[ActionUnion]: CaseReducer<S, ActionUnion>,
@@ -22,6 +24,17 @@ local function createReducer<S>(
 )
 	actionMatchers = actionMatchers or {}
 
+	if _G.__DEV__ then
+		if typeof(mapOrBuilderCallback) == "table" then
+			if not hasWarnedAboutObjectNotation then
+				hasWarnedAboutObjectNotation = true
+				warn(
+					"The object notation for `createReducer` is deprecated, and will be removed in RTK 2.0. Please use the 'builder callback' notation instead: https://redux-toolkit.js.org/api/createReducer"
+				)
+			end
+		end
+	end
+
 	local actionsMap, finalActionMatchers, finalDefaultCaseReducer
 
 	if typeof(mapOrBuilderCallback) == "function" then
@@ -31,7 +44,7 @@ local function createReducer<S>(
 			unpack({ mapOrBuilderCallback, actionMatchers, defaultCaseReducer })
 	end
 
-	-- TODO: fix this
+	-- TODO: remake this
 	local getInitialState: () -> S
 	if typeof(initialState) == "function" then
 		getInitialState = function()

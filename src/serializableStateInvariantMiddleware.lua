@@ -125,7 +125,7 @@ type SerializableStateInvariantMiddlewareOptions = {
 local function createSerializableStateInvariantMiddleware(options: SerializableStateInvariantMiddlewareOptions)
 	options = options or {}
 
-	if options.isProduction then
+	if not _G.__DEV__ then
 		return function()
 			return function(nextDispatch)
 				return function(action)

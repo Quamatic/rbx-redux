@@ -8,7 +8,7 @@ Although the package is usable, some things may be unoptimized. If you happen to
 # To-do before package release
 - [ ] Make the package fully typed
 - [ ] Export all typings to the entry file
-- [ ] Add a feature similar to detect a development environment for throwing errors, warnings, and enabling certain features.
+- [x] Add a feature similar to detect a development environment for throwing errors, warnings, and enabling certain features.
 - [ ] Optimize
 
 # Installation

@@ -2,15 +2,20 @@ local HttpService = game:GetService("HttpService")
 
 local getTimeMeasureUtils = require(script.Parent.utils.getTimeMeasureUtils)
 
+type EntryProcessor = (key: string, value: any) -> any
+local prefix: string = "Invariant failed"
+
 local function invariant(condition: any, message: string?)
 	if condition then
 		return
 	end
 
-	error(message)
-end
+	if _G.__DEV__ then
+		error(prefix)
+	end
 
-type EntryProcessor = (key: string, value: any) -> any
+	error(`{prefix}: {message or ""}`)
+end
 
 local function getSerialize(serializer: EntryProcessor?, decycler: EntryProcessor?): EntryProcessor
 	local stack = {}
@@ -27,6 +32,7 @@ local function getSerialize(serializer: EntryProcessor?, decycler: EntryProcesso
 
 	return function(self: any, key: string, value: any)
 		if #stack > 0 then
+			-- TODO: finish
 			local pos = table.find(self)
 
 			if bit32.bnot(stack) then
@@ -185,7 +191,7 @@ export type ImmutableStateInvariantMiddlewareOptions = {
 local function immutableStateInvariantMiddleware(options: ImmutableStateInvariantMiddlewareOptions?)
 	options = options or {}
 
-	if getfenv().isProduction then
+	if not _G.__DEV__ then
 		-- return default middleware
 		return function()
 			return function(nextDispatch)

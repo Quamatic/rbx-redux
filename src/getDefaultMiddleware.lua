@@ -48,7 +48,7 @@ local function getDefaultMiddleware(options: GetDefaultMiddlewareOptions?): Midd
 		end
 	end
 
-	if getfenv().production then
+	if _G.__DEV__ then
 		if immutableCheck then
 			local immutableOptions = {}
 

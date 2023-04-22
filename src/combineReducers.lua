@@ -99,6 +99,10 @@ local function combineReducers(reducers: ReducerMap)
 	local numFinalReducers = #keys(finalReducers)
 	local unexpectedKeyCache: { [string]: true } = {}
 
+	if _G.__DEV__ then
+		unexpectedKeyCache = {}
+	end
+
 	local _, shapeAssertionError = pcall(assertReducerShape, finalReducers)
 
 	return function(state, action)
@@ -108,10 +112,13 @@ local function combineReducers(reducers: ReducerMap)
 			error(shapeAssertionError)
 		end
 
-		local warningMessage = getUnexpectedStateShapeWarningMessage(state, finalReducers, action, unexpectedKeyCache)
+		if _G.__DEV__ then
+			local warningMessage =
+				getUnexpectedStateShapeWarningMessage(state, finalReducers, action, unexpectedKeyCache)
 
-		if warningMessage then
-			warn(warningMessage)
+			if warningMessage then
+				warn(warningMessage)
+			end
 		end
 
 		local hasChanged = false

@@ -1,1 +1,6 @@
 std = "roblox+testez"
+
+[lints]
+# _G is used for development environment checking
+global_usage = "allow"
+shadowing = "allow"

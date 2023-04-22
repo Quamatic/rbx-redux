@@ -18,6 +18,8 @@ local curryGetDefaultMiddleware = getDefaultMiddleware.curryGetDefaultMiddleware
 local devtoolsExtension = require(script.Parent.devtoolsExtension)
 local composeWithDevTools = devtoolsExtension.composeWithDevTools
 
+local IS_PRODUCTION = not not _G.__DEV__
+
 type DevToolsOptions = devtoolsExtension.DevtoolsEnhancerOptions
 type CurriedGetDefaultMiddleware = getDefaultMiddleware.CurriedGetDefaultMiddleware
 
@@ -63,14 +65,16 @@ local function configureStore<S, A, M, E>(options: ConfigureStoreOptions<S, A, M
 	if typeof(finalMiddleware) == "function" then
 		finalMiddleware = finalMiddleware(curriedGetDefaultMiddleware)
 
-		if typeof(finalMiddleware) ~= "table" then
+		if not IS_PRODUCTION and not isArray(finalMiddleware) then
 			error("When using a middleware builder function, an array of middleware must be returned")
 		end
 	end
 
-	for _, item in finalMiddleware do
-		if typeof(item) ~= "function" then
-			error("each middleware provided to configureStore must be a function")
+	if not IS_PRODUCTION then
+		for _, item in finalMiddleware do
+			if typeof(item) ~= "function" then
+				error("each middleware provided to configureStore must be a function")
+			end
 		end
 	end
 
@@ -81,7 +85,7 @@ local function configureStore<S, A, M, E>(options: ConfigureStoreOptions<S, A, M
 	if devTools then
 		-- TODO: Compose with dev tools
 		finalCompose = composeWithDevTools(merge({
-			trace = false,
+			trace = not IS_PRODUCTION,
 		}, typeof(devTools) == "table" and devTools))
 	end
 

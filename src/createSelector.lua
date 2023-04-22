@@ -30,8 +30,7 @@ local function getDependencies(funcs: { any })
 			`createSelector expects all input-selectors to be functions, but received the following types: [{table.concat(
 				dependencyTypes,
 				", "
-			)}]`,
-			2
+			)}]`
 		)
 	end
 
