@@ -29,7 +29,7 @@ Although the package is usable, some things may be unoptimized. If you happen to
     - [ ] createListenerMiddleware
     - [ ] creatEntityAdapter
     - [ ] devtoolsExtension (This would be quite tough to implement, mainly due to the time it would take. But it is certainly possible.)
-    - [ ] Immer (Probably won't be added due to added layer of complexity.)
+    - [ ] Immer (Probably won't be added due to added layer of complexity, along with the possibility of being super slow due to proxies.)
     - [ ] RTK Query (This will not be implemented, has no practical use on Roblox.)
 
 * Redux Thunk
