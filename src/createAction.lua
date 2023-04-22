@@ -44,7 +44,7 @@ type CreateActionFn =
 	(<P, T>(type: T) -> PayloadActionCreator<P, T, nil>)
 	| (<PA, T>(type: T, prepareAction: PA) -> PayloadActionCreator<any, T, PA>)
 
-local ACTION = newproxy(true)
+local IS_ACTION = newproxy(true)
 
 --[[
 	Creates an object that can be used to easily define a Redux action type & creator
@@ -69,8 +69,9 @@ local ACTION = newproxy(true)
 local function createAction<Args...>(type: string, prepareAction: PreparedAction<Args...>)
 	return setmetatable({
 		type = type,
-		[ACTION] = true,
+		[IS_ACTION] = true,
 
+		-- TODO: is this optimal?
 		match = function(other)
 			return type == other.type
 		end,
@@ -93,22 +94,19 @@ local function createAction<Args...>(type: string, prepareAction: PreparedAction
 			return { type = type, payload = args[1] }
 		end,
 
-		__eq = function(self, other)
-			return self.type == other.type
-		end,
-
 		__tostring = function()
 			return type
 		end,
 	})
 end
 
+-- TODO: make this check better
 local function isAction(action: any): boolean
 	if type(action) ~= "table" then
 		return false
 	end
 
-	return action.type ~= nil and action[ACTION] ~= nil
+	return action.type ~= nil and action[IS_ACTION] ~= nil
 end
 
 return {
