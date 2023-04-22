@@ -1,4 +1,6 @@
-local function reduce<T, U>(array, callback, initialValue)
+type ReduceFn<T, U> = (previousValue: U, currentValue: T, currentIndex: number, array: { T }) -> U
+
+local function reduce<T, U>(array: { T }, callback: ReduceFn<T, U>, initialValue: U?): U
 	local length = #array
 
 	local value: T | U
