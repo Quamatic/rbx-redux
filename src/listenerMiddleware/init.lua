@@ -2,6 +2,9 @@ local types = require(script.types)
 
 local Promise = require(script.Parent.Promise)
 
+local PromiseTypes = require(script.Parent.types.promise)
+type Promise<T> = PromiseTypes.Promise<T>
+
 local createAction_ = require(script.Parent.Parent.Parent.createAction)
 local nanoid = require(script.Parent.Parent.Parent.nanoid)
 local merge = require(script.Parent.Parent.Parent.merge)
@@ -76,7 +79,7 @@ local createTakePattern = function<S>(startListening): types.TakePattern<S>
 				end
 			end)
 
-			local promises = { tuplePromise }
+			local promises: { Promise<nil> } = { tuplePromise }
 
 			if timeout then
 				table.insert(promises, Promise.delay(timeout))
@@ -120,6 +123,7 @@ end
 
 local createListenerEntry = function(options: types.FallbackAddListenerOptions)
 	local id = nanoid()
+
 	local entry: types.ListenerEntry<any, any> = {
 		id = id,
 		type = options.type,

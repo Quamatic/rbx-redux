@@ -3,13 +3,11 @@ local HttpService = game:GetService("HttpService")
 -- TODO: Either check if the user has the Promise package or add it as a dependency.
 local Promise = require(script.Parent.Promise)
 
+local PromiseTypes = require(script.Parent.types.promise)
+type Promise<T> = PromiseTypes.Promise<T>
+
 local createAction = require(script.Parent.createAction).createAction
 local merge = require(script.Parent.merge)
-
--- TODO: is this even necessary?
-type Promise<T> = {
-	andThen: (self: Promise<T>) -> T,
-}
 
 type CreateAsyncThunk<CurriedThunkApiConfig> =
 	(<Returned, ThunkArg>(typePrefix: string) -> AsyncThunk<Returned, ThunkArg, CurriedThunkApiConfig>)

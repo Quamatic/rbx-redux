@@ -29,14 +29,15 @@ Although the package is usable, some things may be unoptimized. If you happen to
         - For a Roblox environment, I do no see any practical use. But it still can be added.
     - [ ] createListenerMiddleware
     - [ ] creatEntityAdapter
-    - [ ] devtoolsExtension
-        - DevTools are an amazing extension of Redux, and are great for live viewing the tree of a store. However, the devtools package itself it quite
-        large with the amount of features it has, and would take quite the effort to implement. It is possible, but tough.
     - [ ] Use of Immer to mutate state
         - Immer in Redux makes immutable state changes a breeze, but implementing it would just be another added layer of complexity (and I don't feel like
         trying to make it). The idea of using proxies is neat, but it could be quite slow. 
     - [ ] RTK Query
         - RTK Query definitely has no practical use on Roblox, and won't be implemented.
+
+* Redux DevTools
+    - DevTools are an amazing extension of Redux, and are great for live viewing the tree of a store. However, the devtools package itself it quite
+    large with the amount of features it has, and would take quite the effort to implement. It is possible, but tough.
 
 * Redux Thunk
     - [x] thunkMiddleware
@@ -48,10 +49,7 @@ Although the package is usable, some things may be unoptimized. If you happen to
 
 * React-Redux
     - Coming soon!
-
-# Motivation
-I wanted to have the modern features of Redux. Porting (most) of the library was quite overkill, but it was still fun to do. This package offers a lot more than Rodux, and (once react-redux is added), goes hand-in-hand with React's rendering.
-
+    
 # Goals
 - [ ] Make the package fully typed
 - [ ] Export all typings to the entry file

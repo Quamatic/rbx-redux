@@ -24,9 +24,14 @@ local createQueueWithTimer = function(timeout: number)
 	end
 end
 
--- requestAnimationFrame is practically equivalent to RenderStepped, but that can't be used on the server.
--- For now, this will just act as a deferred frame.
-local rAF = queueMicrotaskShim
+-- requestAnimationFrame is equal to RunSevice.RenderStepped,
+-- but the server cant use that. So, the server just defaults back to a deferred Heartbeat.
+local rAF = if RunService:IsClient()
+	then function(notify: () -> nil)
+		RunService.RenderStepped:Wait()
+		notify()
+	end
+	else queueMicrotaskShim
 
 export type AutoBatchOptions = {
 	type: "tick",

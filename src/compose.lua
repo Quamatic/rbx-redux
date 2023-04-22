@@ -5,7 +5,7 @@ type ComposeFn<Funcs...> = (Funcs...) -> Function
 
 -- Equivalent to Redux's `compose` function.
 local function compose(...: Function): ComposeFn
-	local funcs = { ... } :: { Function } & { n: number }
+	local funcs = { ... } :: { Function }
 	local len = select("#", ...)
 
 	if len == 0 then

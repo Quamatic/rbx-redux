@@ -22,7 +22,7 @@ return {
 	isAction = createAction.isAction,
 	createSlice = createSlice,
 	createStore = createStore,
-	createSelector = createSelector,
+	createSelector = createSelector.createSelector,
 	createReducer = createReducer,
 	combineReducers = combineReducers,
 	createAsyncThunk = createAsyncThunk.createAsyncThunk,

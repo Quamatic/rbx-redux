@@ -31,6 +31,7 @@ local function createReducer<S>(
 			unpack({ mapOrBuilderCallback, actionMatchers, defaultCaseReducer })
 	end
 
+	-- TODO: fix this
 	local getInitialState: () -> S
 	if typeof(initialState) == "function" then
 		getInitialState = function()

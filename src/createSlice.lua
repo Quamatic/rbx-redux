@@ -43,6 +43,7 @@ local function createSlice<S>(options: SliceParameters<S>): SliceObject<S>
 		error("`name` is a required option for createSlice")
 	end
 
+	-- TODO: fix this
 	local initialState = if typeof(options.initialState) == "table"
 		then table.freeze(options.initialState)
 		else options.initialState
