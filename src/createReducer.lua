@@ -1,4 +1,4 @@
-local merge = require(script.Parent.merge)
+local reduce = require(script.Parent.utils.reduce)
 local executeReducerBuilderCallback = require(script.Parent.mapBuilders).executeReducerBuilderCallback
 
 export type CaseReducer<S = any, A = {}> = (state: S, action: A) -> nil
@@ -13,20 +13,6 @@ export type ActionMatcherDescription<S, A> = {
 }
 
 export type ReadonlyActionMatcherDescriptionCollection<S> = { ActionMatcherDescription<S, any> }
-
-local function reduce<T>(
-	arr: { T },
-	callbackFn: (accumulator: T, currentValue: T, currentIndex: number, array: { T }) -> any,
-	initialValue
-)
-	local result = initialValue or arr[1]
-
-	for i = 1, #arr do
-		result = callbackFn(result, arr[i], i - 1, arr)
-	end
-
-	return result
-end
 
 local function createReducer<S>(
 	initialState: S | (() -> S),

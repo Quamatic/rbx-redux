@@ -1,17 +1,4 @@
--- Polyfill
-local function reduce<T>(
-	arr: { T },
-	callbackFn: (accumulator: T, currentValue: T, currentIndex: number, array: { T }) -> any,
-	initialValue
-)
-	local result = initialValue or arr[1]
-
-	for i = 2, #arr do
-		result = callbackFn(result, arr[i], i - 1, arr)
-	end
-
-	return result
-end
+local reduce = require(script.Parent.utils.reduce)
 
 type Function<T..., R...> = (T...) -> R...
 type ComposeFn<Funcs...> = (Funcs...) -> Function
