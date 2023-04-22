@@ -7,6 +7,8 @@ Although the package is usable, some things may be unoptimized. If you happen to
 
 # What's included?
 
+NOTE: Just because something is included does not 100% mean it works! There are unit tests, but it's not guaranteed to catch all cases.
+
 * Redux
     - [x] createStore (obviously :P)
     - [x] bindActionCreators
