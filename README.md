@@ -15,7 +15,7 @@ Although the package is usable, some things may be unoptimized. If you happen to
 Wally package will be pushed once the to-do above is complete.
 
 # What's included?
-NOTE: Just because something is said to be included does not guarantee it works correctly. There are 
+NOTE: Just because something is said to be included does not guarantee it works correctly. There are unit tests put in place, but it may not catch all possible cases.
 
 * Redux
     - [x] createStore (obviously :P)
