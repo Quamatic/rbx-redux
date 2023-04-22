@@ -5,6 +5,9 @@ The package has been heavily tested (with over 200 unit tests!), so it is pretty
 
 Although the package is usable, some things may be unoptimized. If you happen to notice something that could be changed, please open a PR.
 
+# Installation
+(wally package coming soon!)
+
 # What's included?
 
 NOTE: Just because something is included does not 100% mean it works! There are unit tests, but it's not guaranteed to catch all cases.
