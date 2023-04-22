@@ -18,13 +18,13 @@ type BaseActionCreator<P, T = string, M = any, E = any> = {
 	match: (action: actions.Action<any>) -> boolean,
 }
 
-type ActionCreatorWithPayload<P, T = string> =
+export type ActionCreatorWithPayload<P, T = string> =
 	BaseActionCreator<P, T, any, any>
 	& ((payload: P?) -> PayloadAction<P, T, any, any>)
 
 type IsAny<Args...> = true | false
 
-type PayloadAction<P = nil, T = string, M = any, N = any> = {
+export type PayloadAction<P = nil, T = string, M = any, N = any> = {
 	payload: P,
 	type: T,
 } & ({
@@ -34,7 +34,7 @@ type PayloadAction<P = nil, T = string, M = any, N = any> = {
 })
 
 -- This method probably does nothing, it maps as close as it can to Redux's Typescript source.
-type PayloadActionCreator<P = any, T = string, PA = PreparedAction<P> | nil> = IfPrepareActionMethodProvided<
+export type PayloadActionCreator<P = any, T = string, PA = PreparedAction<P> | nil> = IfPrepareActionMethodProvided<
 	PA,
 	_ActionCreatorWithPreparedPayload<PA, T>,
 	IsAny<P, ActionCreatorWithPayload<any, T>>

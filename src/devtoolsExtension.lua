@@ -7,11 +7,11 @@ export type DevtoolsEnhancerOptions = {
 	maxAge: number?,
 
 	actionSanitizer: <A>(action: A, id: number) -> A?,
-	stateSanitizer: <S>(state: S, index: number) -> S,
+	stateSanitizer: <S>(state: S, index: number) -> S?,
 	actionsBlacklist: string | { string }?,
 	actionsDenylist: string | { string }?,
 	actionsAllowlist: string | { string }?,
-	predicate: <S, A>(state: S, action: A) -> boolean,
+	predicate: <S, A>(state: S, action: A) -> boolean?,
 
 	shouldRecordChanges: boolean?,
 	pauseActionType: string?,

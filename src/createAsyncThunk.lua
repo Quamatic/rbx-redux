@@ -14,13 +14,13 @@ type CreateAsyncThunk<CurriedThunkApiConfig> =
 	| (<Returned, ThunkArg, ThunkApiConfig>(typePrefix: string) -> AsyncThunk<Returned, ThunkArg, ThunkApiConfig>)
 
 type MaybePromise<T> = T | Promise<T>
-type AsyncPayloadThunkCreatorReturnValue<Returned, ThunkApiConfig> = MaybePromise<any>
-type AsyncPayloadThunkCreator<Returned, ThunkArg, ThunkApiConfig> = (
+export type AsyncThunkPayloadCreatorReturnValue<Returned, ThunkApiConfig> = MaybePromise<any>
+export type AsyncThunkPayloadCreator<Returned, ThunkArg, ThunkApiConfig> = (
 	arg: ThunkArg,
 	thunkAPI: any
-) -> AsyncPayloadThunkCreatorReturnValue<Returned, ThunkApiConfig>
+) -> AsyncThunkPayloadCreatorReturnValue<Returned, ThunkApiConfig>
 
-type AsyncThunk<Returned, ThunkArg, ThunkApiConfig> = {}
+export type AsyncThunk<Returned, ThunkArg, ThunkApiConfig> = {}
 
 export type AsyncThunkAction<Returned, ThunkArg, ThunkApiConfig> = (
 	dispatch: any,
@@ -104,7 +104,7 @@ local PENDING = 3
 
 local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 	typePrefix: string,
-	payloadCreator: AsyncPayloadThunkCreator<
+	payloadCreator: AsyncThunkPayloadCreator<
 		Returned,
 		ThunkArg,
 		ThunkApiConfig

@@ -128,4 +128,5 @@ end
 return {
 	autoBatchEnhancer = autoBatchEnhancer,
 	prepareAutoBatched = prepareAutoBatched,
+	SHOULD_AUTOBATCH = SHOULD_AUTOBATCH,
 }

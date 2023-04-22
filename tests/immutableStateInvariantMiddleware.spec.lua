@@ -431,7 +431,7 @@ return function()
 						local isImmutable = options.isImmutable or Redux.isImmutableDefault
 						local ignoredPaths = options.ignoredPaths
 
-						local tracker = Redux.__INTERNAL__trackForMutations(isImmutable, ignoredPaths, state)
+						local tracker = Redux.__DO_NOT_USE__trackForMutations(isImmutable, ignoredPaths, state)
 						local newState = spec.fn(state)
 
 						expect(deepEquals(tracker.detectMutations(), {
@@ -591,7 +591,7 @@ return function()
 						local isImmutable = options.isImmutable or Redux.isImmutableDefault
 						local ignoredPaths = options.ignoredPaths
 
-						local tracker = Redux.__INTERNAL__trackForMutations(isImmutable, ignoredPaths, state)
+						local tracker = Redux.__DO_NOT_USE__trackForMutations(isImmutable, ignoredPaths, state)
 						local newState = spec.fn(state)
 
 						expect(deepEquals(tracker.detectMutations(), { wasMutated = false }))

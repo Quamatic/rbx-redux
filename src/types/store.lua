@@ -24,7 +24,7 @@ export type StoreCreator =
 		enhancer: StoreEnhancer<Ext>?
 	) -> Store<S, A, StateExt> & Ext)
 
-type Unsubscribe = () -> nil
+export type Unsubscribe = () -> nil
 type ListenerCallback = () -> nil
 
 export type Store<S = any, A = any, StateExt = {}> = {

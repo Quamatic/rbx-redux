@@ -23,7 +23,7 @@ local IS_PRODUCTION = not not _G.__DEV__
 type DevToolsOptions = devtoolsExtension.DevtoolsEnhancerOptions
 type CurriedGetDefaultMiddleware = getDefaultMiddleware.CurriedGetDefaultMiddleware
 
-type ConfigureStoreOptions<S = any, A = actions.AnyAction, M = Middlewares<S>, E = Enhancers> = {
+export type ConfigureStoreOptions<S = any, A = actions.AnyAction, M = Middlewares<S>, E = Enhancers> = {
 	reducer: reducers.Reducer<S, A, {}> | reducers.ReducersMapObject<S, A, {}>,
 	middleware: ((getDefaultMiddleware: CurriedGetDefaultMiddleware) -> M) | M,
 	devTools: boolean | DevToolsOptions?,
@@ -31,8 +31,10 @@ type ConfigureStoreOptions<S = any, A = actions.AnyAction, M = Middlewares<S>, E
 	enhancers: E?,
 }
 
-type Middlewares<S> = { middlewareTypes.Middleware<{}, S, {}> }
-type Enhancers = { {} }
+export type ConfigureEnhancersCallback<E = Enhancers> = (defaultEnhancers: { E }) -> E
+
+export type Middlewares<S> = { middlewareTypes.Middleware<{}, S, {}> }
+export type Enhancers = { {} }
 
 export type ToolkitStore<S = any, A = actions.AnyAction, M = Middlewares<S>> = store.Store<S, A, {}> & {
 	dispatch: store.Dispatch<A>,

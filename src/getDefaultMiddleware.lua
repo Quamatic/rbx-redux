@@ -23,7 +23,7 @@ type GetDefaultMiddlewareOptions = {
 }
 
 -- This type is unused because Luau cannot extend nor infer types
-type ThunkMiddlewareFor = {}
+export type ThunkMiddlewareFor = {}
 
 -- Redux does a Partial cast on this type, but thats not possible with Luau
 export type CurriedGetDefaultMiddleware = (options: GetDefaultMiddlewareOptions) -> MiddlewareArray

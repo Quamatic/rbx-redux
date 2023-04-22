@@ -6,7 +6,7 @@ local executeReducerBuilderCallback = require(script.Parent.mapBuilders).execute
 
 local hasWarnedAboutObjectNotation = false
 
-export type SliceParameters<T> = {
+export type CreateSliceOptions<T> = {
 	name: string,
 	initialState: T,
 	reducers: { [string]: ReducerFunction<T> },
@@ -21,10 +21,11 @@ export type ReducerFunction<S> = ((state: S, action: ActionLike) -> S?) | {
 
 export type ActionCreator = {}
 
-export type SliceObject<S> = {
+export type Slice<S> = {
 	name: string,
 	reducer: ReducerFunction<S>,
 	actions: { [string]: ActionCreator },
+	caseReducers: {},
 	getInitialState: () -> S,
 }
 
@@ -39,7 +40,7 @@ end
     and automatically generates action creators and action types that correspond to the reducers and state.
 ]]
 --
-local function createSlice<S>(options: SliceParameters<S>): SliceObject<S>
+local function createSlice<S>(options: CreateSliceOptions<S>): Slice<S>
 	local name = options.name
 	if name == nil or name == "" then
 		error("`name` is a required option for createSlice")
@@ -153,7 +154,7 @@ local function createSlice<S>(options: SliceParameters<S>): SliceObject<S>
 
 			return reducer.getInitialState()
 		end,
-	} :: SliceObject<S>
+	} :: Slice<S>
 end
 
 return createSlice
