@@ -5,12 +5,16 @@ The package has been heavily tested (with over 200 unit tests!), so it is pretty
 
 Although the package is usable, some things may be unoptimized. If you happen to notice something that could be changed, please open a PR.
 
+# To-do before package release
+- [ ] Make the package fully typed
+- [ ] Export all typings to the entry file
+- [ ] Add a feature similar to detect a development environment for throwing errors, warnings, and enabling certain features.
+- [ ] Optimize
+
 # Installation
-(wally package coming soon!)
+Wally package will be pushed once the to-do above is complete.
 
 # What's included?
-
-NOTE: Just because something is included does not 100% mean it works! There are unit tests, but it's not guaranteed to catch all cases.
 
 * Redux
     - [x] createStore (obviously :P)
@@ -41,7 +45,7 @@ NOTE: Just because something is included does not 100% mean it works! There are 
         - RTK Query definitely has no practical use on Roblox, and won't be implemented.
 
 * Redux DevTools
-    - DevTools are an amazing extension of Redux, and are great for live viewing the tree of a store. However, the devtools package itself it quite
+    - [ ] DevTools are an amazing extension of Redux, and are great for live viewing the tree of a store. However, the devtools package itself it quite
     large with the amount of features it has, and would take quite the effort to implement. It is possible, but tough.
 
 * Redux Thunk
@@ -54,9 +58,3 @@ NOTE: Just because something is included does not 100% mean it works! There are 
 
 * React-Redux
     - Coming soon!
-    
-# Goals
-- [ ] Make the package fully typed
-- [ ] Export all typings to the entry file
-- [ ] Add a feature similar to a production/development environment for stuff like throwing errors & warnings
-- [ ] Add optimizations
