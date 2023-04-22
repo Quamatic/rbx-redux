@@ -14,7 +14,7 @@ Although the package is usable, some things may be unoptimized. If you happen to
     - [x] compose
     - [x] applyMiddleware
 
-* Redux Devtools
+* Redux Toolkit
     - [x] autoBatchEnhancer
     - [x] getDefaultMiddleware
     - [x] configureStore
