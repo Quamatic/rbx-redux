@@ -17,9 +17,9 @@ function MiddlewareArray:concat(...: any)
 end
 
 function MiddlewareArray:prepend(...: any)
-	local args = { ... }
+	local args, length = { ... }, select("#", ...)
 
-	if #args == 1 and isArray(args[1]) then
+	if length and isArray(args[1]) then
 		return MiddlewareArray.new(jsConcat(args[1]))
 	end
 

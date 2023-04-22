@@ -19,10 +19,10 @@ function EnhancerArray:concat(...)
 end
 
 function EnhancerArray:prepend(...)
-	local args = { ... }
+	local args, length = { ... }, select("#", ...)
 
-	if #args == 1 and isArray(args[0]) then
-		return EnhancerArray.new(jsConcat(args[0], self))
+	if length == 1 and isArray(args[1]) then
+		return EnhancerArray.new(jsConcat(args[1], self))
 	end
 
 	return EnhancerArray.new(jsConcat(args, self))

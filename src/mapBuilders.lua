@@ -22,17 +22,17 @@ local function executeReducerBuilderCallback<S>(builderCallback: (builder: Actio
 
 	function builder.addCase(typeOrActionCreator, reducer)
 		if #actionMatchers > 0 then
-			error("`builder.addCase` should only be called before calling `builder.addMatcher`", 2)
+			error("`builder.addCase` should only be called before calling `builder.addMatcher`")
 		end
 
 		if defaultCaseReducer then
-			error("builder.addCase should only be called before calling 'builder.addDefaultCase'", 2)
+			error("builder.addCase should only be called before calling 'builder.addDefaultCase'")
 		end
 
 		local type = if typeof(typeOrActionCreator) == "string" then typeOrActionCreator else typeOrActionCreator.type
 
 		if actionsMap[type] then
-			error("builder.addCase cannot be called with two reducers for the same action type", 2)
+			error("builder.addCase cannot be called with two reducers for the same action type")
 		end
 
 		actionsMap[type] = reducer
@@ -41,7 +41,7 @@ local function executeReducerBuilderCallback<S>(builderCallback: (builder: Actio
 
 	function builder.addMatcher<A>(matcher, reducer)
 		if defaultCaseReducer then
-			error("builder.addMatcher should only be called before calling 'builder.addDefaultCase'", 2)
+			error("builder.addMatcher should only be called before calling 'builder.addDefaultCase'")
 		end
 
 		table.insert(actionMatchers, { matcher = matcher, reducer = reducer })
@@ -50,7 +50,7 @@ local function executeReducerBuilderCallback<S>(builderCallback: (builder: Actio
 
 	function builder.addDefaultCase(reducer)
 		if defaultCaseReducer then
-			error("builder.addDefaultCase can only be called once", 2)
+			error("builder.addDefaultCase can only be called once")
 		end
 
 		defaultCaseReducer = reducer

@@ -46,7 +46,7 @@ local function hasExpectedRequestedMetadata(action: any, validStatus: { string }
 end
 
 local function isAsyncThunkArray(a: { any })
-	return typeof(a[0]) == "function" and a.pending ~= nil and a.fulfilled ~= nil and a.rejected ~= nil
+	return typeof(a[1]) == "function" and a.pending ~= nil and a.fulfilled ~= nil and a.rejected ~= nil
 end
 
 local isPending, isRejected, isFulfilled, isAsyncThunkAction
@@ -54,20 +54,21 @@ do
 	local function createAsyncThunkMatcher(statuses: { string })
 		local function isCurrentStatus(...)
 			-- Pack it as we need the length
-			local asyncThunks = table.pack(...)
+			local asyncThunks = { ... }
+			local length = select("#", ...)
 
-			if asyncThunks.n == 0 then
+			if length == 0 then
 				return function(action: any)
 					return hasExpectedRequestedMetadata(action, statuses)
 				end
 			end
 
 			if not isAsyncThunkArray(asyncThunks) then
-				return isCurrentStatus()(asyncThunks[0])
+				return isCurrentStatus()(asyncThunks[1])
 			end
 
 			return function(action: any)
-				local matchers = table.create(asyncThunks.n)
+				local matchers = table.create(length)
 
 				for _, asyncThunk in asyncThunks do
 					table.insert(matchers, { asyncThunk[unpack(statuses)] })
