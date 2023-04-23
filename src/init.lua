@@ -170,7 +170,7 @@ return {
 
 	-- *createAsyncThunk
 	createAsyncThunk = createAsyncThunk.createAsyncThunk,
-	unwrapResult = createAsyncThunk.unwrapResult,
+	unwrapAsyncThunkResult = createAsyncThunk.unwrapResult,
 
 	-- *autoBatchEnhancer
 	autoBatchEnhancer = autoBatchEnhancer.autoBatchEnhancer,
