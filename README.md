@@ -5,14 +5,12 @@ The package has been heavily tested (with over 200 unit tests!), so it is pretty
 
 Although the package is usable, some things may be unoptimized. If you happen to notice something that could be changed, please open a PR.
 
-# To-do before package release
-- [ ] Make the package fully typed
-- [x] Export all (main) typings to the entry file
-- [x] Add a feature similar to detect a development environment for throwing errors, warnings, and enabling certain features.
-- [ ] Optimize
-
 # Installation
-Wally package will be pushed once the to-do above is complete.
+Add this to your `wally.toml` file:
+
+```toml
+Redux = quamatic/rbx-redux@1.0.0
+```
 
 # What's included?
 NOTE: Just because something is said to be included does not guarantee it works correctly. There are unit tests put in place, but it may not catch all possible cases.
