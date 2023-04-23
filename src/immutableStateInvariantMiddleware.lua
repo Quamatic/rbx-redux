@@ -1,6 +1,7 @@
 local HttpService = game:GetService("HttpService")
 
 local getTimeMeasureUtils = require(script.Parent.utils.getTimeMeasureUtils)
+local splice = require(script.Parent.utils.splice)
 
 type EntryProcessor = (key: string, value: any) -> any
 local prefix: string = "Invariant failed"
@@ -10,11 +11,51 @@ local function invariant(condition: any, message: string?)
 		return
 	end
 
-	if _G.__DEV__ then
+	if not _G.__DEV__ then
 		error(prefix)
 	end
 
 	error(`{prefix}: {message or ""}`)
+end
+
+-- This isn't really used anywhere else throughout the project, might as well stick it here...
+-- Credit to corepackages/collections/array
+local function slice<T>(t: { T }, start_idx: number?, end_idx: number?): { T }
+	if typeof(t) ~= "table" then
+		error(string.format("Array.slice called on %s", typeof(t)))
+	end
+	local length = #t
+
+	local start_idx_ = start_idx or 1
+	local end_idx_
+	if end_idx == nil or end_idx > length + 1 then
+		end_idx_ = length + 1
+	else
+		end_idx_ = end_idx
+	end
+
+	if start_idx_ > length + 1 then
+		return {}
+	end
+
+	local slice = {}
+
+	if start_idx_ < 1 then
+		start_idx_ = math.max(length - math.abs(start_idx_), 1)
+	end
+	if end_idx_ < 1 then
+		end_idx_ = math.max(length - math.abs(end_idx_), 1)
+	end
+
+	local idx = start_idx_
+	local i = 1
+	while idx < end_idx_ do
+		slice[i] = t[idx]
+		idx = idx + 1
+		i = i + 1
+	end
+
+	return slice
 end
 
 local function getSerialize(serializer: EntryProcessor?, decycler: EntryProcessor?): EntryProcessor
@@ -26,25 +67,30 @@ local function getSerialize(serializer: EntryProcessor?, decycler: EntryProcesso
 			if stack[1] == value then
 				return "[Circular ~]"
 			end
-			return `[Circular ~. {table.concat(keys, ".")}]`
+			return `[Circular ~. {table.concat(slice(keys, 1, table.find(stack, value) or -1), ".")}]`
 		end
 	end
 
-	return function(self: any, key: string, value: any)
+	return function(this: any, key: string, value: any)
 		if #stack > 0 then
-			-- TODO: finish
-			local pos = table.find(self)
+			local thisPos = table.find(stack, this) or -1
 
-			if bit32.bnot(stack) then
+			if bit32.bnot(thisPos) ~= 0 then
+				splice(stack, thisPos + 1)
+				splice(keys, thisPos, math.huge, key)
+			else
+				table.insert(stack, this)
+				table.insert(keys, key)
 			end
 
-			if bit32.bnot(keys) then
+			if bit32.bnot(table.find(stack, value) or -1) ~= 0 then
+				value = decycler(key, value)
 			end
 		else
 			table.insert(stack, value)
 		end
 
-		return if serializer == nil then value else serializer(self, key, value)
+		return if serializer == nil then value else serializer(this, key, value)
 	end
 end
 
@@ -52,7 +98,7 @@ local function stringify(obj: any, serializer: EntryProcessor?, indent: string |
 	local replace = getSerialize(serializer, decycler)
 
 	for key, value in obj do
-		obj[key] = replace(key, value)
+		obj[key] = replace(obj, key, value)
 	end
 
 	return HttpService:JSONEncode(obj)

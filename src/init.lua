@@ -161,6 +161,7 @@ return {
 	configureStore = configureStore,
 	createSlice = createSlice,
 	createReducer = createReducer.createReducer,
+	IS_REDUCER = createReducer.IS_REDUCER,
 	getDefaultMiddleware = getDefaultMiddleware.getDefaultMiddleware,
 	nanoid = nanoid,
 
