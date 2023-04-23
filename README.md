@@ -1,9 +1,8 @@
 # rbx-redux
 An (almost) 1:1 conversion of the JS state management library Redux.
 
-The package has been heavily tested (with over 200 unit tests!), so it is pretty stable to use atm. If you are experiencing a bug or an issue, please don't hesitate to open an issue!
-
-Although the package is usable, some things may be unoptimized. If you happen to notice something that could be changed, please open a PR.
+I did my best to translate many of the features of Redux, including packages made for it, such as toolkit and thunk. However, translating these features was quite hard,
+so even though I did lots of unit testing, there still could be some bugs or unoptimized sections. If you happen to notice anything, please open an issue.
 
 # Installation
 Add this to your `wally.toml` file:
