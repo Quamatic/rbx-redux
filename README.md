@@ -9,7 +9,7 @@ Although the package is usable, some things may be unoptimized. If you happen to
 Add this to your `wally.toml` file:
 
 ```console
-Redux = quamatic/rbx-redux@1.0.0
+Redux = "quamatic/rbx-redux@1.0.0"
 ```
 
 # What's included?
