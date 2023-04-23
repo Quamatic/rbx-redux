@@ -8,7 +8,7 @@ Although the package is usable, some things may be unoptimized. If you happen to
 # Installation
 Add this to your `wally.toml` file:
 
-```toml
+```console
 Redux = quamatic/rbx-redux@1.0.0
 ```
 
