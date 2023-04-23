@@ -16,6 +16,10 @@ export type ActionMatcherDescription<S, A> = {
 
 export type ReadonlyActionMatcherDescriptionCollection<S> = { ActionMatcherDescription<S, any> }
 
+-- This is a marker used to make reducers from createReducer still be seen as a function,
+-- since they're created as a table with a __call metamethod.
+local IS_REDUCER = newproxy(false)
+
 local function createReducer<S>(
 	initialState: S | (() -> S),
 	mapOrBuilderCallback: CaseReducers<S, any> | ((any) -> nil),
@@ -99,9 +103,8 @@ local function createReducer<S>(
 	end
 
 	return setmetatable({
-		getInitialState = function(_self)
-			return getInitialState()
-		end,
+		getInitialState = getInitialState,
+		[IS_REDUCER] = true,
 	}, {
 		__call = function(_self, ...)
 			return reducer(...)
@@ -109,4 +112,7 @@ local function createReducer<S>(
 	})
 end
 
-return createReducer
+return {
+	createReducer = createReducer,
+	IS_REDUCER = IS_REDUCER,
+}

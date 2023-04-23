@@ -8,6 +8,8 @@ local combineReducers = require(script.Parent.combineReducers)
 local applyMiddleware = require(script.Parent.applyMiddleware)
 local compose = require(script.Parent.compose)
 
+local IS_REDUCER = require(script.Parent.createReducer).IS_REDUCER
+
 local isArray = require(script.Parent.utils.isArray)
 local merge = require(script.Parent.merge)
 local EnhancerArray = require(script.Parent.utils.EnhancerArray)
@@ -56,7 +58,12 @@ local function configureStore<S, A, M, E>(options: ConfigureStoreOptions<S, A, M
 	if typeof(reducer) == "function" then
 		rootReducer = options.reducer
 	elseif typeof(reducer) == "table" then
-		rootReducer = (combineReducers(reducer) :: any) :: reducers.Reducer<S, A, {}>
+		if reducer[IS_REDUCER] then
+			-- This is a reducer created from createReducer
+			rootReducer = reducer
+		else
+			rootReducer = (combineReducers(reducer) :: any) :: reducers.Reducer<S, A, {}>
+		end
 	else
 		error(
 			'"reducer" is a required argument, and must be a function or an object of functions that can be passed to combineReducers'

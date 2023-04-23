@@ -1,5 +1,5 @@
 local createAction = require(script.Parent.createAction).createAction
-local createReducer = require(script.Parent.createReducer)
+local createReducer = require(script.Parent.createReducer).createReducer
 local merge = require(script.Parent.merge)
 
 local executeReducerBuilderCallback = require(script.Parent.mapBuilders).executeReducerBuilderCallback

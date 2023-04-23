@@ -1,12 +1,11 @@
-local HttpService = game:GetService("HttpService")
-
--- TODO: Either check if the user has the Promise package or add it as a dependency.
 local Promise = require(script.Parent.Promise)
 
 local PromiseTypes = require(script.Parent.types.promise)
 type Promise<T> = PromiseTypes.Promise<T>
 
 local createAction = require(script.Parent.createAction).createAction
+local nanoid = require(script.Parent.nanoid)
+local createSignal = require(script.Parent.utils.createSignal)
 local merge = require(script.Parent.merge)
 
 type CreateAsyncThunk<CurriedThunkApiConfig> =
@@ -86,11 +85,11 @@ end
 
 local function unwrapResult<R>(action: R)
 	if action.meta and action.meta.rejectedWithValue then
-		error(action.payload, 2)
+		error(action.payload)
 	end
 
 	if action.error then
-		error(action.error, 2)
+		error(action.error)
 	end
 
 	return action.payload
@@ -100,7 +99,6 @@ local Result = newproxy(false)
 
 local FULFILLED = 1
 local REJECTED = 2
-local PENDING = 3
 
 local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 	typePrefix: string,
@@ -144,12 +142,13 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 		function(err: any?, requestId: string, arg: ThunkArg, payload: any?, meta: any?)
 			return {
 				payload = payload,
+				error = err or "Rejected",
 				meta = merge(meta or {}, {
-					error = err,
 					arg = arg,
 					requestId = requestId,
 					rejectedWithValue = not not payload,
 					requestStatus = "rejected",
+					condition = err == "Aborted due to condition callback returning false.",
 				}),
 			}
 		end
@@ -157,16 +156,17 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 
 	local function actionCreator(arg: ThunkArg): AsyncThunkAction<Returned, ThunkArg, ThunkApiConfig>
 		return function(dispatch, getState, extra)
-			local requestId = if options and options.idGenerator ~= nil
-				then options.idGenerator(arg)
-				else HttpService:GenerateGUID(false)
+			local requestId = if options and options.idGenerator ~= nil then options.idGenerator(arg) else nanoid()
 
 			local finalAction: typeof(fulfilled) | typeof(rejected)
 			local promise: Promise<typeof(finalAction)>
 
 			-- TODO: Finish this, and make sure aborting doesnt break the entire operation.
+			local onAbortSignal = createSignal()
+			local abortReason: string?
+			local aborted = false
 
-			promise = Promise.new(function(resolve, reject, onCancel)
+			promise = Promise.new(function(resolve, reject)
 				local conditionResult = nil
 
 				if options and options.condition then
@@ -179,21 +179,12 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 				end
 
 				-- Semantically the same as Redux's abort method
-				if conditionResult == false or onCancel() then
-					return reject({
-						name = "ConditionError",
-						message = "Aborted due to condition callback returning false.",
-					})
+				if conditionResult == false or aborted then
+					return reject("Aborted due to condition callback returning false.")
 				end
 
-				local abortedPromise = Promise.new(function(_, reject_, onCancel_)
-					-- Calling this promise's onCancel makes more sense than its parent
-					onCancel_(function()
-						reject_({
-							name = "AbortError",
-							reason = "Aborted",
-						})
-					end)
+				onAbortSignal.subscribe(function()
+					reject(abortReason or "Aborted")
 				end)
 
 				-- Dispatch pending action
@@ -209,58 +200,58 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 				dispatch(pending(requestId, arg, pendingMetaResult))
 
 				-- Race to see if the payload resolves or we forcefully abort before it's ready
-				resolve(Promise.race({
-					abortedPromise,
-					Promise.resolve(payloadCreator(arg, {
-						dispatch = dispatch,
-						getState = getState,
-						extra = extra,
-						requestId = requestId,
-
-						abort = function()
-							promise:cancel()
-							promise = nil
-						end,
-
-						onAborted = function() end,
-						aborted = false,
-
-						rejectWithValue = function(value: any, meta: any?)
-							return {
-								[Result] = REJECTED,
-								payload = value,
-								meta = meta,
-							}
-						end,
-
-						fulfillWithValue = function(value: any, meta: any?)
-							return {
-								[Result] = FULFILLED,
-								payload = value,
-								meta = meta,
-							}
-						end,
-					})),
+				resolve(payloadCreator(arg, {
+					dispatch = dispatch,
+					getState = getState,
+					extra = extra,
+					requestId = requestId,
+					signal = onAbortSignal,
+					rejectWithValue = function(value: any, meta: any?)
+						return {
+							[Result] = REJECTED,
+							payload = value,
+							meta = meta,
+						}
+					end,
+					fulfillWithValue = function(value: any, meta: any?)
+						return {
+							[Result] = FULFILLED,
+							payload = value,
+							meta = meta,
+						}
+					end,
 				}))
 			end)
 				:andThen(function(result)
+					-- Redux does two `instanceof` checks here, but just checking if its a table should be fine, due to using an unique proxy.
 					if typeof(result) == "table" then
 						if result[Result] == REJECTED then
+							-- If it was sent as `rejected` then pass it on to the catch block
 							return Promise.reject(result)
-						elseif result[Result] == FULFILLED then
+						end
+
+						if result[Result] == FULFILLED then
 							finalAction = fulfilled(result.payload, requestId, arg, result.meta)
+							return
 						end
 					end
 
-					finalAction = fulfilled(result, requestId, arg)
+					finalAction = fulfilled(result :: any, requestId, arg)
 				end)
 				:catch(function(err)
+					-- Not really sure if this is super necessary?
+					if Promise.Error.is(err) then
+						err = tostring(err)
+					end
+
 					-- Make the final action whatever the error was
-					finalAction = if err[Result] == REJECTED
+					finalAction = if typeof(err) == "table" and err[Result] == REJECTED
 						then rejected(nil, requestId, arg, err.payload, err.meta)
-						else rejected(err, requestId, arg)
+						else rejected(err :: any, requestId, arg)
 				end)
 				:andThen(function()
+					-- Dispatch result after the catch
+
 					local skipDispatch = options
 						and not options.dispatchConditionRejection
 						and rejected.match(finalAction)
@@ -273,19 +264,23 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 					return finalAction
 				end)
 
-			-- Redux assigns fields to the promise with Object.assign here
-			-- but instead we have to do some metatable magic to get the same result
-			-- Why is javascript so stupid? Why are functions objects?
+			-- This is a super hacked in way to mimic ".abort(reason)"
+			-- I do not like it at all, but this is how it works with Redux. should probably figure out how to work around cancellations
+			promise.cancel = function(_: typeof(promise), reason: string)
+				aborted = true
+				abortReason = reason
 
-			return setmetatable({
-				requestId = requestId,
-				arg = arg,
-				unwrap = function()
-					return promise:andThen(unwrapResult)
-				end,
-			}, {
-				__index = promise,
-			})
+				onAbortSignal.fire()
+			end
+
+			-- Added extra fields from Redux
+			promise.requestId = requestId
+			promise.arg = arg
+			promise.unwrap = function()
+				return promise:andThen(unwrapResult)
+			end
+
+			return promise
 		end
 	end
 
@@ -296,7 +291,6 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 		typePrefix = typePrefix,
 	}, {
 		__call = function(_, arg: ThunkArg)
-			-- TODO: Add self to `actionCreator` to prevent creating another function?
 			return actionCreator(arg)
 		end,
 	}) :: CreateAsyncThunk<AsyncThunkConfig>

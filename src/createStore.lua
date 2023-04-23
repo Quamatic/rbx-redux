@@ -1,6 +1,8 @@
 local store = require(script.Parent.types.store)
 local reducers = require(script.Parent.types.reducers)
 
+local IS_REDUCER = require(script.Parent.createReducer).IS_REDUCER
+
 local ActionTypes = require(script.Parent.utils.actionTypes)
 
 type StoreEnhancerStoreCreator<Ext = {}, StateExt = {}> = (
@@ -21,8 +23,7 @@ type StoreCreator =
 	| (<S, A, Ext, StateExt, PreloadedState>(
 		reducer: reducers.Reducer<S, A, PreloadedState>,
 		preloadedState: PreloadedState?,
-		---@diagnostic disable-next-line: undefined-type
-		enhancer: StoreEnhancer<Ext>?
+		enhancer: StoreEnhancer<Ext, StateExt>?
 	) -> Store<S, A, StateExt> & Ext)
 
 type Unsubscribe = () -> nil
@@ -42,8 +43,17 @@ local function createStore<S, A, Ext, StateExt, PreloadedState>(
 	-- Dont use this argument
 	_fakeEnhancerArg: StoreEnhancer<Ext, StateExt>?
 ): Store<S, A, StateExt> & Ext
+	-- Check if its a vanilla reducer, or a reducer created from createReducer.
 	if typeof(reducer) ~= "function" then
-		error(`Expected the root reducer to be a function. Instead, received: {typeof(reducer)}`, 2)
+		if typeof(reducer) == "table" then
+			if reducer[IS_REDUCER] == nil then
+				error(
+					"Attempted to pass a table as the reducer. Only reducers created from `createReducer` are valid tables to pass."
+				)
+			end
+		else
+			error(`Expected the root reducer to be a function. Instead, received: {typeof(reducer)}`, 2)
+		end
 	end
 
 	if
@@ -132,6 +142,7 @@ local function createStore<S, A, Ext, StateExt, PreloadedState>(
 		local listeners = currentListeners
 
 		for _, listener in listeners do
+			-- TODO: should this be spawned?
 			task.spawn(listener)
 		end
 

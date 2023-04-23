@@ -159,7 +159,7 @@ return {
 	-- *toolkit
 	configureStore = configureStore,
 	createSlice = createSlice,
-	createReducer = createReducer,
+	createReducer = createReducer.createReducer,
 	getDefaultMiddleware = getDefaultMiddleware.getDefaultMiddleware,
 	nanoid = nanoid,
 
