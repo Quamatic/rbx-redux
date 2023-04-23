@@ -2,7 +2,7 @@ local matches = function(matcher, action)
 	if typeof(matcher) == "function" then
 		return matcher(action)
 	else
-		return matcher:match(action)
+		return matcher.match(action)
 	end
 end
 
@@ -35,7 +35,7 @@ local function isAllOf(...)
 end
 
 local function hasExpectedRequestedMetadata(action: any, validStatus: { string })
-	if not action or not action.meta then
+	if typeof(action) ~= "table" or not action.meta then
 		return false
 	end
 
@@ -46,7 +46,7 @@ local function hasExpectedRequestedMetadata(action: any, validStatus: { string }
 end
 
 local function isAsyncThunkArray(a: { any })
-	return typeof(a[1]) == "function" and a.pending ~= nil and a.fulfilled ~= nil and a.rejected ~= nil
+	return typeof(a[1]) == "table" and a[1].pending ~= nil and a[1].fulfilled ~= nil and a[1].rejected ~= nil
 end
 
 local isPending, isRejected, isFulfilled, isAsyncThunkAction
@@ -71,7 +71,9 @@ do
 				local matchers = table.create(length)
 
 				for _, asyncThunk in asyncThunks do
-					table.insert(matchers, { asyncThunk[unpack(statuses)] })
+					for _, status in statuses do
+						table.insert(matchers, asyncThunk[status])
+					end
 				end
 
 				local combinedMatcher = isAnyOf(unpack(matchers))
@@ -89,6 +91,30 @@ do
 	isAsyncThunkAction = createAsyncThunkMatcher({ "pending", "rejected", "fulfilled" })
 end
 
+local function isRejectedWithValue(...)
+	local thunks = { ... }
+
+	local hasFlag = function(action)
+		return action and action.meta and action.meta.rejectedWithValue
+	end
+
+	if select("#", ...) == 0 then
+		return function(action)
+			local combinedMatcher = isAllOf(isRejected(unpack(thunks)), hasFlag)
+			return combinedMatcher(action)
+		end
+	end
+
+	if not isAsyncThunkArray(thunks) then
+		return isRejectedWithValue()(thunks[1])
+	end
+
+	return function(action)
+		local combinedMatcher = isAllOf(isRejected(unpack(thunks)), hasFlag)
+		return combinedMatcher(action)
+	end
+end
+
 return {
 	isAnyOf = isAnyOf,
 	isAllOf = isAllOf,
@@ -97,5 +123,6 @@ return {
 	isPending = isPending,
 	isRejected = isRejected,
 	isFulfilled = isFulfilled,
+	isRejectedWithValue = isRejectedWithValue,
 	isAsyncThunkAction = isAsyncThunkAction,
 }

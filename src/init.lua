@@ -147,6 +147,7 @@ return {
 	isRejected = matchers.isRejected,
 	isFulfilled = matchers.isFulfilled,
 	isAsyncThunkAction = matchers.isAsyncThunkAction,
+	isRejectedWithValue = matchers.isRejectedWithValue,
 	isAsyncThunkArray = matchers.isAsyncThunkArray,
 
 	-- *vanilla
