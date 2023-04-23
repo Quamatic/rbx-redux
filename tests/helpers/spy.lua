@@ -47,7 +47,6 @@ local function spy(fn)
 		wasLastCalledWith = function(...)
 			local last = calls[#calls]
 			if last == nil then
-				print("Super sussy tbh")
 				return false
 			end
 

@@ -183,7 +183,10 @@ return {
 	isImmutableDefault = createImmutableStateInvariantMiddleware.isImmutableDefault,
 
 	-- *reselect
+	defaultMemoize = require(script.utils.defaultMemoize),
 	createSelector = createSelector.createSelector,
+	createSelectorCreator = createSelector.createSelectorCreator,
+	createStructureSelector = createSelector.createStructureSelector,
 
 	-- *thunk
 	thunkMiddleware = thunk.thunk,

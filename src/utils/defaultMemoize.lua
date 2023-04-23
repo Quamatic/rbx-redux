@@ -1,3 +1,5 @@
+local splice = require(script.Parent.splice)
+
 local NOT_FOUND = newproxy(true)
 type NOT_FOUND_TYPE = typeof(NOT_FOUND)
 
@@ -28,7 +30,10 @@ local function createSingletonCache(equals: EqualityFn): Cache
 		end,
 
 		put = function(key, value)
-			entry = { key, value }
+			entry = {
+				key = key,
+				value = value,
+			}
 		end,
 
 		getEntries = function()
@@ -58,7 +63,7 @@ local function createLruCache(maxSize: number, equals): Cache
 			local entry = entries[cacheIndex]
 
 			if cacheIndex > 1 then
-				table.remove(entries, cacheIndex)
+				splice(entries, cacheIndex, 1)
 				table.insert(entries, 1, entry)
 			end
 
@@ -74,7 +79,7 @@ local function createLruCache(maxSize: number, equals): Cache
 
 			local len = #entries
 			if len > maxSize then
-				entries[len] = nil
+				table.remove(entries)
 			end
 		end
 	end
@@ -136,7 +141,8 @@ local function defaultMemoize<Args...>(func: (Args...) -> any, equalityCheckOrOp
 	local cache = if maxSize == 1 then createSingletonCache(comparator) else createLruCache(maxSize, comparator)
 
 	local function memoized(...: Args...)
-		local value = cache.get(...)
+		local arguments = { ... }
+		local value = cache.get(arguments)
 
 		if value == NOT_FOUND then
 			value = func(...)
@@ -157,7 +163,7 @@ local function defaultMemoize<Args...>(func: (Args...) -> any, equalityCheckOrOp
 				end
 			end
 
-			cache.put(..., value)
+			cache.put(arguments, value)
 		end
 
 		return value
