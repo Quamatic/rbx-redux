@@ -1,29 +1,25 @@
 local isArray = require(script.Parent.isArray)
+local concat = require(script.Parent.concat)
 
 local MiddlewareArray = {}
 MiddlewareArray.__index = MiddlewareArray
-
--- TODO: Move this to util, and change the way it works... super inefficient right now
-local function jsConcat(t: table, ...)
-	return { unpack(t), ... }
-end
 
 function MiddlewareArray.new(...)
 	return setmetatable({ ... }, MiddlewareArray)
 end
 
 function MiddlewareArray:concat(...: any)
-	return jsConcat(self, ...)
+	return MiddlewareArray.new(unpack(concat(self, ...)))
 end
 
 function MiddlewareArray:prepend(...: any)
 	local args, length = { ... }, select("#", ...)
 
-	if length and isArray(args[1]) then
-		return MiddlewareArray.new(jsConcat(args[1]))
+	if length == 1 and isArray(args[1]) then
+		return MiddlewareArray.new(unpack(concat(args[1], self)))
 	end
 
-	return MiddlewareArray.new(jsConcat(args, self))
+	return MiddlewareArray.new(unpack(concat(args, self)))
 end
 
 export type MiddlewareArray = typeof(MiddlewareArray.new())
