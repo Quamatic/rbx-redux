@@ -56,11 +56,7 @@ local function createSlice<S>(options: CreateSliceOptions<S>): Slice<S>
 		end
 	end
 
-	-- TODO: fix this
-	local initialState = if typeof(options.initialState) == "table"
-		then table.freeze(options.initialState)
-		else options.initialState
-
+	local initialState = options.initialState
 	local reducers = options.reducers or {}
 
 	local sliceCaseReducersByName = {}

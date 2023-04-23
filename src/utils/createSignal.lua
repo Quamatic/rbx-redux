@@ -40,9 +40,15 @@ local function createSignal()
 		table.clear(suspendedConnections)
 	end
 
+	local function clear()
+		table.clear(connections)
+		table.clear(suspendedConnections)
+	end
+
 	return {
 		subscribe = subscribe,
 		fire = fire,
+		clear = clear,
 	}
 end
 

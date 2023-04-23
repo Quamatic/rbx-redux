@@ -148,6 +148,7 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 					requestId = requestId,
 					rejectedWithValue = not not payload,
 					requestStatus = "rejected",
+					-- todo: change this, was hardcoded for testing
 					condition = err == "Aborted due to condition callback returning false.",
 				}),
 			}
@@ -263,15 +264,23 @@ local function createAsyncThunk<Returned, ThunkArg, ThunkApiConfig>(
 
 					return finalAction
 				end)
+				:finallyCall(onAbortSignal.clear)
 
 			-- This is a super hacked in way to mimic ".abort(reason)"
 			-- I do not like it at all, but this is how it works with Redux. should probably figure out how to work around cancellations
-			promise.cancel = function(_: typeof(promise), reason: string)
+			local function abort(_: typeof(promise), reason: string)
+				if aborted then
+					return
+				end
+
 				aborted = true
 				abortReason = reason
 
 				onAbortSignal.fire()
 			end
+
+			promise.cancel = abort
+			promise.abort = abort -- semantics
 
 			-- Added extra fields from Redux
 			promise.requestId = requestId
