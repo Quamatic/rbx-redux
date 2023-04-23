@@ -142,8 +142,7 @@ local function createStore<S, A, Ext, StateExt, PreloadedState>(
 		local listeners = currentListeners
 
 		for _, listener in listeners do
-			-- TODO: should this be spawned?
-			task.spawn(listener)
+			listener()
 		end
 
 		return action
@@ -167,8 +166,8 @@ local function createStore<S, A, Ext, StateExt, PreloadedState>(
 
 		ensureCanMutateNextListeners()
 
-		local listenerId = listenerIdCounter
 		listenerIdCounter += 1
+		local listenerId = listenerIdCounter
 		nextListeners[listenerId] = listener
 
 		return function()

@@ -398,9 +398,6 @@ return function()
 			expect(#listener3.calls).to.equal(1)
 		end)
 
-		-- look back at this unit test later
-
-		--[[
 		it("uses the last snapshot of subscribers during a nested dispatch", function()
 			local store = Redux.createStore(reducers.todos)
 
@@ -412,14 +409,11 @@ return function()
 			local unsubscribe4: any
 			local unsubscribe1
 			unsubscribe1 = store.subscribe(function()
-				print("called but why")
 				listener1.fn()
 				expect(#listener1.calls).to.equal(1)
 				expect(#listener2.calls).to.equal(0)
 				expect(#listener3.calls).to.equal(0)
 				expect(#listener4.calls).to.equal(0)
-
-				print("H")
 
 				unsubscribe1()
 				unsubscribe4 = store.subscribe(listener4.fn)
@@ -430,8 +424,6 @@ return function()
 				expect(#listener3.calls).to.equal(1)
 				expect(#listener4.calls).to.equal(1)
 			end)
-
-			print("Wait what")
 
 			store.subscribe(listener2.fn)
 			store.subscribe(listener3.fn)
@@ -448,8 +440,7 @@ return function()
 			expect(#listener2.calls).to.equal(3)
 			expect(#listener3.calls).to.equal(3)
 			expect(#listener4.calls).to.equal(1)
-		end)]]
-		--
+		end)
 
 		it("provides an up-to-date state when a subscriber is notified", function()
 			local store = Redux.createStore(reducers.todos)
