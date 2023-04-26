@@ -20,6 +20,8 @@ local function behavesLikeReducer(todosReducer, it, expect)
 	end)
 
 	it("should handle ADD_TODO", function()
+		print("add_todo")
+
 		expect(deepEquals(
 			todosReducer({}, {
 				type = "ADD_TODO",
@@ -117,49 +119,22 @@ end
 
 return function()
 	describe("createReducer", function()
-		local addTodo = function(state, action)
-			local newTodo = table.clone(action.payload.newTodo)
-			newTodo.completed = false
+		describe("given impure reducers with immer", function()
+			local function addTodo(state, action)
+				local newTodo = table.clone(action.payload.newTodo)
+				newTodo.completed = false
 
-			local copy = table.clone(state)
-			table.insert(copy, newTodo)
-
-			return copy
-		end
-
-		local toggleTodo = function(state, action)
-			local index = action.payload.index
-
-			local copy = table.clone(state)
-			local todo = copy[index]
-
-			if todo == nil then
-				return copy
+				Redux.insert(state, newTodo)
 			end
 
-			todo = table.clone(todo)
-			todo.completed = not todo.completed
+			local function toggleTodo(state, action)
+				local index = action.payload.index
+				local todo = state[index]
 
-			copy[index] = todo
+				todo.completed = not todo.completed
+			end
 
-			return copy
-		end
-
-		describe("given pure reducers with immutable updates", function()
 			local todosReducer = Redux.createReducer({}, {
-				ADD_TODO = addTodo,
-				TOGGLE_TODO = toggleTodo,
-			})
-
-			behavesLikeReducer(todosReducer, it, expect)
-		end)
-
-		describe("accepts a lazy state init function to generate initial state", function()
-			local lazyStateInit = function()
-				return {}
-			end
-
-			local todosReducer = Redux.createReducer(lazyStateInit, {
 				ADD_TODO = addTodo,
 				TOGGLE_TODO = toggleTodo,
 			})

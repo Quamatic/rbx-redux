@@ -1,4 +1,8 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Immer = require(script.Parent.Parent.Immer)
+
 local reduce = require(script.Parent.utils.reduce)
+local freezeDraftable = require(script.Parent.utils.freezeDraftable)
 local executeReducerBuilderCallback = require(script.Parent.mapBuilders).executeReducerBuilderCallback
 
 local hasWarnedAboutObjectNotation = false
@@ -48,15 +52,15 @@ local function createReducer<S>(
 			unpack({ mapOrBuilderCallback, actionMatchers, defaultCaseReducer })
 	end
 
-	-- TODO: remake this
 	local getInitialState: () -> S
 	if typeof(initialState) == "function" then
 		getInitialState = function()
-			return initialState()
+			return freezeDraftable(initialState())
 		end
 	else
+		local frozenInitialState = freezeDraftable(initialState)
 		getInitialState = function()
-			return initialState
+			return frozenInitialState
 		end
 	end
 
@@ -89,13 +93,31 @@ local function createReducer<S>(
 
 		return reduce(caseReducers, function(previousState, caseReducer): S
 			if caseReducer then
-				local result = caseReducer(previousState, action)
+				if Immer.isDraft(previousState) then
+					local result = caseReducer(previousState, action)
 
-				if result == nil then
-					return previousState
+					if result == nil then
+						return previousState
+					end
+
+					return result :: S
+				elseif not Immer.isDraftable(previousState) then
+					local result = caseReducer(previousState, action)
+
+					if result == nil then
+						if previousState == nil then
+							return previousState
+						end
+
+						error("A case reducer on a non-draftable value must not return undefined")
+					end
+
+					return result :: S
+				else
+					return Immer.produce(previousState, function(draft)
+						return caseReducer(draft, action)
+					end)
 				end
-
-				return result :: S
 			end
 
 			return previousState

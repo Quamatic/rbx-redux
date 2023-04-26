@@ -36,9 +36,6 @@ NOTE: Just because something is said to be included does not guarantee it works 
         - For a Roblox environment, I do no see any practical use. But it still can be added.
     - [ ] createListenerMiddleware
     - [ ] creatEntityAdapter
-    - [ ] Use of Immer to mutate state
-        - Immer in Redux makes immutable state changes a breeze, but implementing it would just be another added layer of complexity (and I don't feel like
-        trying to make it). The idea of using proxies is neat, but it could be quite slow. 
     - [ ] RTK Query
         - RTK Query definitely has no practical use on Roblox, and won't be implemented.
 

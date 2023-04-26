@@ -1,3 +1,5 @@
+local Immer = require(script.Parent.Immer)
+
 local createAsyncThunk = require(script.createAsyncThunk)
 local configureStore = require(script.configureStore)
 local createAction = require(script.createAction)
@@ -195,6 +197,10 @@ return {
 	-- *utils
 	MiddlewareArray = require(script.utils.MiddlewareArray),
 	EnhancerArray = require(script.utils.EnhancerArray),
+
+	-- * Immut re-exports
+	insert = Immer.insert,
+	remove = Immer.remove,
 
 	-- @internal
 	__DO_NOT_USE__trackForMutations = createImmutableStateInvariantMiddleware.trackForMutations,

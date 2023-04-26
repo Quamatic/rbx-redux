@@ -8,3 +8,4 @@ exclude = ["tests"]
 [dependencies]
 TestEZ = "roblox/testez@0.4.1"
 Promise = "evaera/promise@4.0.0"
+Immer = "solarhorizon/immut@0.3.2"

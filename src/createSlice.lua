@@ -1,5 +1,7 @@
 local createAction = require(script.Parent.createAction).createAction
 local createReducer = require(script.Parent.createReducer).createReducer
+
+local freezeDraftable = require(script.Parent.utils.freezeDraftable)
 local merge = require(script.Parent.merge)
 
 local executeReducerBuilderCallback = require(script.Parent.mapBuilders).executeReducerBuilderCallback
@@ -56,7 +58,10 @@ local function createSlice<S>(options: CreateSliceOptions<S>): Slice<S>
 		end
 	end
 
-	local initialState = options.initialState
+	local initialState = if typeof(options.initialState) == "function"
+		then options.initialState
+		else freezeDraftable(options.initialState)
+
 	local reducers = options.reducers or {}
 
 	local sliceCaseReducersByName = {}
