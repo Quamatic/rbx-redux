@@ -189,6 +189,7 @@ return {
 	createSelector = createSelector.createSelector,
 	createSelectorCreator = createSelector.createSelectorCreator,
 	createStructureSelector = createSelector.createStructureSelector,
+	createDraftSafeSelector = require(script.createDraftSafeSelector),
 
 	-- *thunk
 	thunkMiddleware = thunk.thunk,
@@ -201,6 +202,8 @@ return {
 	-- * Immut re-exports
 	insert = Immer.insert,
 	remove = Immer.remove,
+	current = Immer.current,
+	original = Immer.original,
 
 	-- @internal
 	__DO_NOT_USE__trackForMutations = createImmutableStateInvariantMiddleware.trackForMutations,
