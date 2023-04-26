@@ -8,7 +8,7 @@ so even though I did lots of unit testing, there still could be some bugs or uno
 Add this to your `wally.toml` file:
 
 ```console
-Redux = "quamatic/rbx-redux@1.0.0"
+Redux = "quamatic/rbx-redux@1.1.0"
 ```
 
 # What's included?
